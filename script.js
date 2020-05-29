@@ -36,19 +36,9 @@ function initializeGame() {
     trilhaSound = new sound("sounds/soundTrilha.wav");
     winnerSound = new sound("sounds/soundWinner.wav");
 
+    iniciaModal("home-login");
     initializeArray();
-
-    /*namePlayer1 = prompt("Nome Jogador 1:");
-    namePlayer2 = prompt("Nome Jogador 2:");*/
-
-    if (namePlayer1 === undefined || namePlayer1 == null || namePlayer1.length <= 0) {
-        namePlayer1 = "1";
-    }
-    if (namePlayer2 === undefined || namePlayer2 == null || namePlayer2.length <= 0) {
-        namePlayer2 = "2";
-    }
-    //alert("Jogador " + namePlayer1 + /*verde*/" com VERDE começa, em seguida o Jogador "+ namePlayer2 /*vermelho*/ + " com VERMELHO");
-    document.getElementById("turn").innerHTML = namePlayer1
+    
 }
 
 function sound(src) {
@@ -61,6 +51,35 @@ function sound(src) {
     this.play = function () {
         this.sound.play();
     }
+}
+
+function iniciaModal(modalID) {
+    const modal = document.getElementById(modalID);
+    modal.classList.add("mostrar");
+    modal.addEventListener('click', (e) => {
+        if(e.target.id == "btnSozinho") {
+            alert("EM DESENVOLVIMENTO");
+        }
+        else if (e.target.id == "btnDoisMesmaMaq") {
+            namePlayer1 = document.getElementById("nome1").value;
+            namePlayer2 = document.getElementById("nome2").value;
+            if(namePlayer1 === undefined || namePlayer1 == null || namePlayer1.trim().length <= 0 ||
+               namePlayer2 === undefined || namePlayer2 == null || namePlayer2.trim().length <= 0){
+                alert("Insira os nomes do dois Jogadores!");
+            } else {
+                modal.classList.remove("mostrar");
+                alert(namePlayer1 + /*verde*/" começa com VERDE, em seguida "+ namePlayer2 /*vermelho*/ + " com VERMELHO");
+                document.getElementById("turn").innerHTML = namePlayer1
+            }
+        }
+        else if (e.target.id == "btnMultiplayer") {
+            alert("EM DESENVOLVIMENTO");
+        };
+    });
+}
+
+function recomecarJogo() {
+    location.reload(true);
 }
 
 function initializeArray() {
@@ -707,6 +726,7 @@ function allArePartOfMill(playerCode) {
     }
     return true;
 }
+
 function canMove(playerCode, blocksLeft) {
     //If only 3 are left then it can always move anywhere
     //Se restarem apenas 3, ele sempre poderá se mover para qualquer lugar
