@@ -1,10 +1,12 @@
 <!DOCTYPE HTML>
 <html>
 <head>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Bangers&display=swap');
+    </style>
     <meta charset="UTF-8">
     <link rel="stylesheet" type="text/css" href="style.css">
     <title>Trilha dos Heróis</title>
-    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
     <link href='https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700' rel='stylesheet' type='text/css'>
     <link rel="shortcut icon" href="images/favicon.ico" />
 </head>
@@ -12,7 +14,7 @@
 
 <div class="header">
     <span class="turn">Turno: <span id="turn">Verde</span></span>
-    <span class="message"><!--Mensagem: --><span id="message">Clique em um lugar vazio para colocar sua peça</span></span>
+    <span class="message"><span id="message">Clique em um lugar vazio para colocar sua peça</span></span>
 </div>
 <br>
 <div class="mid">
@@ -21,9 +23,58 @@
     </canvas>
 </div>
 
-<p class="copyright">Copyright &#169 Fatec-SP
+<p class="copyright">Copyright &#169
     <script type="text/javascript">document.write(new Date().getFullYear());</script>
 </p>
+
+<div id="home-login" class="home-container">
+    <div class="home">
+        <div class="entrar">
+            <h3 class="texto-home">Criar sala: </h3>
+            <form>
+                <br>
+                <br>
+                <input type="text" class="input-nome" placeholder="Nome">
+                <br>
+                <br>
+                <br>
+                <input type="button" class="comecar" value="Começar">
+            </form>
+        </div>
+        <div>
+            fatec-sp
+        </div>
+        <div class="local">
+            <h3 class="texto-home">2 mesmo computador: </h3>
+            <form>
+                <br>
+                <input type="text" class="input-nome" placeholder="Nome #1">
+                <br>
+                <br>
+                <input type="text" class="input-nome" placeholder="Nome #2">
+                <br>
+                <br>
+                <input type="button" class="comecar" value="Batalhar">
+            </form>
+        </div>
+        <div>
+            fatec-sp
+        </div>
+        <div class="multiplayer">
+            <h3 class="texto-home">Entrar na sala: </h3>
+            <form>
+                <br>
+                <input type="text" class="input-nome" placeholder="#Id">
+                <br>
+                <br>
+                <input type="text" class="input-nome" placeholder="Nome">
+                <br>
+                <br>
+                <input type="button" class="comecar" value="Entrar">
+            </form>
+        </div>
+    </div>
+</div>
 <script src="script.js"></script>
 </body>
 </html>

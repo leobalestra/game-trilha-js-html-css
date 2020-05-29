@@ -5,9 +5,10 @@
 
 .header {
     margin: 10px;
-    font-family: Montserrat, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-family: 'Bangers', cursive;
     font-weight: 400;
-    font-size: 16px;
+    font-size: 20px;
+    text-shadow:#000 1px -2px, #000 -1px 2px, #000 1px 2px, #000 -1px -2px;
 }
 
 .message {
@@ -28,11 +29,82 @@
     text-align: center;
     line-height: 40px;
     font-size: 16px;
-    font-family: "Roboto Slab", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-family: 'Bangers', cursive;
+    text-shadow:#000 1px -2px, #000 -1px 2px, #000 1px 2px, #000 -1px -2px;
+}
+
+.home-container {
+    width: 100vw;
+    height: 100vh;
+    background: rgb(0,0,0,.5);
+    display: none;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;    
+}
+
+.home-container.mostrar {
+    display: flex;
+}
+
+.mostrar .home {
+    animation: home_ani .8s;
+}
+
+.home {
+    background: white;
+    display: flex;
+    min-width: 300px;
+    padding: 40px;
+    border: 10px solid #252222;
+    box-shadow: 0 0 0 5px white;
+}
+
+.texto-home {
+    color: #000000;
+    margin: auto;
+    line-height: 40px;
+    font-size: 30px;
+    font-family: 'Bangers', cursive;
+}
+
+.input-nome {
+    margin: auto;
+    text-align: center;
+    border-radius: 10px;
+    font-family: 'Bangers', cursive;
+    width:300px;
+    font-size: 25px;
+    height: 30px;
+}
+
+.entrar {
+    text-align: center;
+}
+
+.local {
+    text-align: center;
+}
+
+.multiplayer {
+    text-align: center;
+}
+
+.comecar {
+    margin: auto;
+    text-align: center;
+    border-radius: 10px;
+    font-family: 'Bangers', cursive;
+    font-size: 20px;
+    width:120px;
+    height: 40px;
 }
 
 body {
-    background: url("../PROJECT-NINE-MEN-S-MORRIS/images/background.jpg") no-repeat center center fixed;
+    background: url("../game-trilha-js-html-css/images/background.jpg") no-repeat center center fixed;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
@@ -47,4 +119,17 @@ canvas {
     margin: auto;
     background: url("images/main.png");
     border: 1px solid #d3d3d3;
+}
+
+
+@keyframes home_ani {
+    from {
+        opacity: 0;
+        transform: translate3d(0, -60px, 0);
+    }
+    to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+
 }

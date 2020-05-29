@@ -1,3 +1,4 @@
+/* Código orginal https://github.com/yadav-rahul/Nine-Mens-Morris*/
 var playerOneCode = 1;
 var playerTwoCode = 2;
 var redBlocks = 0;
