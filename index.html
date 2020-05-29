@@ -1,0 +1,29 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <title>Trilha dos Heróis</title>
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700' rel='stylesheet' type='text/css'>
+    <link rel="shortcut icon" href="images/favicon.ico" />
+</head>
+<body onload="initializeGame()">
+
+<div class="header">
+    <span class="turn">Turno: <span id="turn">Verde</span></span>
+    <span class="message"><!--Mensagem: --><span id="message">Clique em um lugar vazio para colocar sua peça</span></span>
+</div>
+<br>
+<div class="mid">
+    <canvas height="550" width="550" id="myCanvas">
+        Seu navegador não suporta HTML5.
+    </canvas>
+</div>
+
+<p class="copyright">Copyright &#169 Fatec-SP
+    <script type="text/javascript">document.write(new Date().getFullYear());</script>
+</p>
+<script src="script.js"></script>
+</body>
+</html>
