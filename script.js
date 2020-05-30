@@ -810,16 +810,14 @@ function canMove(playerCode, blocksLeft) {
             }
         }
     }
-
     return false;
 }
 
 function update() {
-    //Update player turn
     if (numberOfTurns % 2 != 0) {
-        document.getElementById("turn").innerHTML = namePlayer2 /*"Vermelho"*/;
+        document.getElementById("turn").innerHTML = namePlayer2;
     } else {
-        document.getElementById("turn").innerHTML = namePlayer1 /*"Verde"*/;
+        document.getElementById("turn").innerHTML = namePlayer1;
     }
 }
 
