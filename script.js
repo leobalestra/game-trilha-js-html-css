@@ -36,6 +36,13 @@ function initializeGame() {
     trilhaSound = new sound("sounds/soundTrilha.wav");
     winnerSound = new sound("sounds/soundWinner.wav");
 
+    capSound = new sound("sounds/soundCap.wav");
+    ferroSound = new sound("sounds/soundFerro.wav");
+    aranhaSound = new sound("sounds/soundAranha.wav");
+    thanosSound = new sound("sounds/soundThanos.wav");
+    hulkSound = new sound("sounds/soundHulk.wav");
+    viuvaSound = new sound("sounds/soundViuva.wav");
+
     iniciaModal("home-login");
     initializeArray();
     
@@ -68,7 +75,7 @@ function iniciaModal(modalID) {
                 alert("Insira os nomes do dois Jogadores!");
             } else {
                 modal.classList.remove("mostrar");
-                alert(namePlayer1 + /*verde*/" começa com VERDE, em seguida "+ namePlayer2 /*vermelho*/ + " com VERMELHO");
+                //alert(namePlayer1 + /*verde*/" começa com VERDE, em seguida "+ namePlayer2 /*vermelho*/ + " com VERMELHO");
                 document.getElementById("turn").innerHTML = namePlayer1
             }
         }
@@ -819,30 +826,36 @@ function update() {
 function trocarImagem(caminho) {
     var id = caminho.id;
     if(id == 'tab_cap') {
-        document.getElementById('myCanvas').style = "background-image: url('images/main.png');"
+        document.getElementById('myCanvas').style = "background-image: url('images/main.png');";
+        capSound.play();
     } else if (id == 'tab_ferro'){
-        document.getElementById('myCanvas').style = "background-image: url('images/main1.png');"
+        document.getElementById('myCanvas').style = "background-image: url('images/main1.png');";
+        ferroSound.play();
     } else if (id == 'tab_aranha'){
-        document.getElementById('myCanvas').style = "background-image: url('images/main2.png');"
+        document.getElementById('myCanvas').style = "background-image: url('images/main2.png');";
+        aranhaSound.play();
     } else if (id == 'tab_hulk'){
-        document.getElementById('myCanvas').style = "background-image: url('images/main3.png');"
+        document.getElementById('myCanvas').style = "background-image: url('images/main3.png');";
+        hulkSound.play();
     } else if (id == 'tab_thanos'){
-        document.getElementById('myCanvas').style = "background-image: url('images/main4.png');"
+        document.getElementById('myCanvas').style = "background-image: url('images/main4.png');";
+        thanosSound.play();
     } else if (id == 'tab_viuva'){
-        document.getElementById('myCanvas').style = "background-image: url('images/main5.png');"
+        document.getElementById('myCanvas').style = "background-image: url('images/main5.png');";
+        viuvaSound.play();
     }else if (id == 'back_geral'){
-        document.getElementById('body').style = "background-image: url('images/background.jpg');"
+        document.getElementById('body').style = "background-image: url('images/background.jpg');";
     }else if (id == 'back_cap'){
-        document.getElementById('body').style = "background-image: url('images/background1.jpg');"
+        document.getElementById('body').style = "background-image: url('images/background1.jpg');";
     }else if (id == 'back_ferro'){
-        document.getElementById('body').style = "background-image: url('images/background2.jpg');"
+        document.getElementById('body').style = "background-image: url('images/background2.jpg');";
     }else if (id == 'back_aranha'){
-        document.getElementById('body').style = "background-image: url('images/background3.jpg');"
+        document.getElementById('body').style = "background-image: url('images/background3.jpg');";
     }else if (id == 'back_hulk'){
-        document.getElementById('body').style = "background-image: url('images/background4.jpg');"
+        document.getElementById('body').style = "background-image: url('images/background4.jpg');";
     }else if (id == 'back_thanos'){
-        document.getElementById('body').style = "background-image: url('images/background5.jpg');"
+        document.getElementById('body').style = "background-image: url('images/background5.jpg');";
     }else if (id == 'back_viuva'){
-        document.getElementById('body').style = "background-image: url('images/background6.jpg');"
+        document.getElementById('body').style = "background-image: url('images/background6.jpg');";
     }
 }
