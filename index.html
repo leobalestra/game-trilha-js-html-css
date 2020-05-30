@@ -10,20 +10,78 @@
     <link href='https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700' rel='stylesheet' type='text/css'>
     <link rel="shortcut icon" href="images/favicon.ico" />
 </head>
-<body onload="initializeGame()">
+<body id="body" onload="initializeGame()" style="background-image: url('images/background.jpg');">
 
 <div class="header">
+    <span class="turn"><span id="turn">Victor Stark</span></span> 
+    <span> - </span>
     <span class="message"><span id="message">Clique em um lugar vazio para colocar sua peça</span></span>
-    <span class="reload"><span id="reload" onclick="recomecarJogo()">RECOMEÇAR</span></span>
-    <span class="turn"><span id="turn">Victor Stark</span></span>    
-    
 </div>
-<br>
+
 <div class="mid">
     <canvas height="550" width="550" id="myCanvas">
         Seu navegador não suporta HTML5.
     </canvas>
 </div>
+
+<div class="div_reload">
+    <span class="reload"><span id="reload" onclick="recomecarJogo()">RECOMEÇAR</span></span>      
+</div>
+
+<div class="tabuleiro">
+    Escolha teu tabuleiro:
+</div>
+<div class="lista">
+    <div class="imagens_tab">
+        <img id="tab_cap" src="images/main.png" width="100" height="100" onclick="trocarImagem(this)"/>
+    </div>
+    <div class="imagens_tab">
+        <img id="tab_ferro" src="images/main1.png" width="100" height="100" onclick="trocarImagem(this)"/>
+    </div>
+    <div class="imagens_tab">
+        <img id="tab_aranha" src="images/main2.png" width="100" height="100" onclick="trocarImagem(this)"/>
+    </div>
+    <div class="imagens_tab">
+        <img id="tab_hulk" src="images/main3.png" width="100" height="100" onclick="trocarImagem(this)"/>
+    </div>
+    <div class="imagens_tab">
+        <img id="tab_thanos" src="images/main4.png" width="100" height="100" onclick="trocarImagem(this)"/>
+    </div>
+    <div class="imagens_tab">
+        <img id="tab_viuva" src="images/main5.png" width="100" height="100" onclick="trocarImagem(this)"/>
+    </div>
+    
+</div>
+
+<div class="tabuleiro">
+    Escolha teu background:
+</div>
+
+<div class="lista">
+    <div class="imagens_tab">
+        <img id="back_geral" src="images/background.jpg" width="160" height="90" border= 3px onclick="trocarImagem(this)"/>
+    </div>
+    <div class="imagens_tab">
+        <img id="back_cap" src="images/background1.jpg" width="160" height="90" border= 3px onclick="trocarImagem(this)"/>
+    </div>
+    <div class="imagens_tab">
+        <img id="back_ferro" src="images/background2.jpg" width="160" height="90" border= 3px onclick="trocarImagem(this)"/>
+    </div>
+    <div class="imagens_tab">
+        <img id="back_aranha" src="images/background3.jpg" width="160" height="90" border= 3px onclick="trocarImagem(this)"/>
+    </div>
+    <div class="imagens_tab">
+        <img id="back_hulk" src="images/background4.jpg" width="160" height="90" border= 3px onclick="trocarImagem(this)"/>
+    </div>
+    <div class="imagens_tab">
+        <img id="back_thanos" src="images/background5.jpg" width="160" height="90" border= 3px onclick="trocarImagem(this)"/>
+    </div>
+    <div class="imagens_tab">
+        <img id="back_viuva" src="images/background6.jpg" width="160" height="90" border= 3px onclick="trocarImagem(this)"/>
+    </div>
+    
+</div>
+
 
 <p class="copyright">Copyright &#169
     <script type="text/javascript">document.write(new Date().getFullYear());</script>
@@ -67,7 +125,7 @@
             <h3 class="texto-home">Entrar na sala: </h3>
             <form>
                 <br>
-                <input type="text" class="input-nome" placeholder="#Id">
+                <input type="text" class="input-nome" placeholder="#Id" onkeypress="return event.charCode >= 48 && event.charCode <= 57">
                 <br>
                 <br>
                 <input type="text" class="input-nome" placeholder="Nome">

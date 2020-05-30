@@ -815,3 +815,34 @@ function update() {
         document.getElementById("turn").innerHTML = namePlayer1 /*"Verde"*/;
     }
 }
+
+function trocarImagem(caminho) {
+    var id = caminho.id;
+    if(id == 'tab_cap') {
+        document.getElementById('myCanvas').style = "background-image: url('images/main.png');"
+    } else if (id == 'tab_ferro'){
+        document.getElementById('myCanvas').style = "background-image: url('images/main1.png');"
+    } else if (id == 'tab_aranha'){
+        document.getElementById('myCanvas').style = "background-image: url('images/main2.png');"
+    } else if (id == 'tab_hulk'){
+        document.getElementById('myCanvas').style = "background-image: url('images/main3.png');"
+    } else if (id == 'tab_thanos'){
+        document.getElementById('myCanvas').style = "background-image: url('images/main4.png');"
+    } else if (id == 'tab_viuva'){
+        document.getElementById('myCanvas').style = "background-image: url('images/main5.png');"
+    }else if (id == 'back_geral'){
+        document.getElementById('body').style = "background-image: url('images/background.jpg');"
+    }else if (id == 'back_cap'){
+        document.getElementById('body').style = "background-image: url('images/background1.jpg');"
+    }else if (id == 'back_ferro'){
+        document.getElementById('body').style = "background-image: url('images/background2.jpg');"
+    }else if (id == 'back_aranha'){
+        document.getElementById('body').style = "background-image: url('images/background3.jpg');"
+    }else if (id == 'back_hulk'){
+        document.getElementById('body').style = "background-image: url('images/background4.jpg');"
+    }else if (id == 'back_thanos'){
+        document.getElementById('body').style = "background-image: url('images/background5.jpg');"
+    }else if (id == 'back_viuva'){
+        document.getElementById('body').style = "background-image: url('images/background6.jpg');"
+    }
+}

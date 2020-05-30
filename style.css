@@ -4,30 +4,55 @@
 }
 
 .header {
-    margin: 10px;
     font-family: 'Bangers', cursive;
-    font-weight: 400;
+    text-align: center;
+    padding: 10px;
     font-size: 20px;
     text-shadow:#000 1px -2px, #000 -1px 2px, #000 1px 2px, #000 -1px -2px;
 }
 
-.message {
-    margin-left: 20%;
-    margin-bottom: 1%;
-    float: left;
+.tabuleiro {
+    margin-top: 30px;
+    text-align: center;
+    font-family: 'Bangers', cursive;
+    font-weight: 400;
+    font-size: 40px;
+    text-shadow:rgb(92, 22, 22) 2px -2px, rgb(13, 61, 27) -2px 2px, rgb(26, 18, 71) 2px 2px, rgb(91, 104, 19) -2px -2px;
 }
 
-.turn {
-    margin-right: 22%;
-    margin-bottom: 1%;
-    float: right;
+.lista {
+    margin-top: 20px;
+	display: flex;
+    justify-content: center;
+}
+
+.imagens_tab {
+    position: relative;
+    text-align: center;
+    padding: 5px;
+    cursor: pointer;
+}
+
+.turn {   
+    color: black;
+    font-size: 25px;
+    text-shadow:rgb(252, 2, 2) 1px -1px, rgb(6, 187, 60) -1px 1px, rgb(43, 7, 248) 1px 1px, rgb(221, 236, 7) -1px -1px; 
+}
+
+.div_reload {
+    font-family: 'Bangers', cursive;
+    font-size: 15px;
+    color: white;
+    text-shadow:#000 1px -2px, #000 -1px 2px, #000 1px 2px, #000 -1px -2px;
 }
 
 .reload {
-    margin-bottom: 1%;
     float: right;
-    font-size: 25px;
+    margin-right: 410px;
+    font-size: 15px;
     cursor: pointer;
+    color: black;
+    text-shadow:#FFF 1px -2px, #FFF -1px 2px, #FFF 1px 2px, #FFF -1px -2px;
 }
 
 .copyright {
@@ -112,7 +137,9 @@
 }
 
 body {
-    background: url("../game-trilha-js-html-css/images/background.jpg") no-repeat center center fixed;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-attachment: fixed;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
@@ -129,7 +156,6 @@ canvas {
     border: 1px;
     border-radius: 10px;
 }
-
 
 @keyframes home_ani {
     from {
