@@ -29,6 +29,8 @@ var referenceMatrix = new Array(7);
 var canvas = document.getElementById("myCanvas");
 var context = canvas.getContext("2d");
 
+const socket = io.connect('http://localhost:5000');
+//const socket = io.connect('http://tic-tac-toe-realtime.herokuapp.com'),
 
 function initializeGame() {
     clickSound  = new sound("sounds/sound.wav");
@@ -45,7 +47,6 @@ function initializeGame() {
 
     iniciaModal("home-login");
     initializeArray();
-    
 }
 
 function sound(src) {
@@ -64,9 +65,21 @@ function iniciaModal(modalID) {
     const modal = document.getElementById(modalID);
     modal.classList.add("mostrar");
     modal.addEventListener('click', (e) => {
+
         if(e.target.id == "btnSozinho") {
-            alert("EM DESENVOLVIMENTO");
+            const name = document.getElementById("nameNew").value;
+            if (!name) {
+                alert('Coloque um nome para começar!');
+                return;
+            }
+            socket.emit('createGame', { name });
+            modal.classList.remove("mostrar");
+            document.getElementById("turn").innerHTML = name;
+            namePlayer1 = document.getElementById("name").value;
+            namePlayer2 = "Oponente";
+            //player = new Player(name, P2);
         }
+
         else if (e.target.id == "btnDoisMesmaMaq") {
             namePlayer1 = document.getElementById("nome1").value;
             namePlayer2 = document.getElementById("nome2").value;
@@ -76,14 +89,60 @@ function iniciaModal(modalID) {
             } else {
                 modal.classList.remove("mostrar");
                 //alert(namePlayer1 + /*verde*/" começa com VERDE, em seguida "+ namePlayer2 /*vermelho*/ + " com VERMELHO");
-                document.getElementById("turn").innerHTML = namePlayer1
+                document.getElementById("turn").innerHTML = namePlayer1;
             }
         }
+
         else if (e.target.id == "btnMultiplayer") {
-            alert("EM DESENVOLVIMENTO");
+              const name = document.getElementById("nameJoin").value;
+              const roomID = document.getElementById("room").value;
+              if (!name || !roomID) {
+                alert('Coloque o ID da Sala e o Nome!');
+                return;
+              }
+              socket.emit('joinGame', { name, room: roomID });
+              modal.classList.remove("mostrar");
+              document.getElementById("turn").innerHTML = name;
+              namePlayer1 = "Oponente";
+              namePlayer2 = document.getElementById("name").value;
+              //player = new Player(name, P2);
         };
     });
 }
+
+            
+// New Game created by current client. Update the UI and create new Game var.
+socket.on('newGame', (data) => {
+    console.log("esperando 2");
+    const message =
+      `Olá, ${data.name}. Diga para seu oponente entrar da sala ID: 
+      ${data.room}. Esperando player 2...`;
+
+    // Create game for player 1
+    document.getElementById("message").innerHTML = message;
+});
+
+socket.on('player1', (data) => {
+    console.log(data);
+    const message = "Seu oponente chegou, pode jogar!";
+    document.getElementById("message").innerHTML = message;
+    //player.setCurrentTurn(true);
+});
+
+socket.on('player2', (data) => {
+    console.log(data);
+    //console.log("o dois ta pronto");
+    const message = "Pronto, espera seu oponente jogar!";
+    // Create game for player 2
+    //game = new Game(data.room);
+    document.getElementById("message").innerHTML = message;
+    //player.setCurrentTurn(false);
+});
+
+socket.on('err', (data) => {
+    alert("A sala está cheia!");
+    location.reload();
+  });
 
 function recomecarJogo() {
     location.reload(true);

@@ -95,7 +95,7 @@
             <form>
                 <br>
                 <br>
-                <input type="text" class="input-nome" placeholder="Nome">
+                <input id="nameNew" type="text" class="input-nome" placeholder="Nome">
                 <br>
                 <br>
                 <br>
@@ -125,10 +125,10 @@
             <h3 class="texto-home">Entrar na sala: </h3>
             <form>
                 <br>
-                <input type="text" class="input-nome" placeholder="#Id" onkeypress="return event.charCode >= 48 && event.charCode <= 57">
+                <input id="room" type="text" class="input-nome" placeholder="#Id">
                 <br>
                 <br>
-                <input type="text" class="input-nome" placeholder="Nome">
+                <input id="nameJoin" type="text" class="input-nome" placeholder="Nome">
                 <br>
                 <br>
                 <input id="btnMultiplayer" type="button" class="comecar" value="Entrar">
@@ -136,6 +136,7 @@
         </div>
     </div>
 </div>
+<script src="/socket.io/socket.io.js"></script>
 <script src="script.js"></script>
 </body>
 </html>
