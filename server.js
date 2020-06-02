@@ -18,14 +18,12 @@ io.on('connection', (socket) => {
 
     // Cria novo jogo e notifica o criador do jogo!
     socket.on('createGame', (data) => {
-        console.log("criou game no socket");
         socket.join(`room-${++rooms}`);
         socket.emit('newGame', { name: data.name, room: `room-${rooms}` });
     });
 
     // Conectar jogador 2. Erro para sala cheia.
     socket.on('joinGame', function (data) {
-        console.log("criou segundo game no socket");
         var room = io.nsps['/'].adapter.rooms[data.room];
         if (room && room.length === 1) {
             socket.join(data.room);
@@ -35,7 +33,7 @@ io.on('connection', (socket) => {
             socket.emit('err', { message: 'Sorry, The room is full!' });
         }
     });
-/*
+
     // Handle the turn played by either player and notify the other.
     socket.on('playTurn', (data) => {
         socket.broadcast.to(data.room).emit('turnPlayed', {
@@ -43,7 +41,7 @@ io.on('connection', (socket) => {
             room: data.room
         });
     });
-
+/*
     // Notify the players about the victor.
     socket.on('gameEnded', (data) => {
         socket.broadcast.to(data.room).emit('gameEnd', data);
