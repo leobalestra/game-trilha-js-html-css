@@ -34,8 +34,9 @@ var quemEuSou1or2;
 var idSala;
 var cliqueNoTabuleiro;
 
-const socket = io.connect('http://localhost:5000');
-//const socket = io.connect('http://tic-tac-toe-realtime.herokuapp.com')
+//para subir o app, use npm install e depois npm start
+//const socket = io.connect('http://localhost:5000');
+const socket = io.connect('https://trilha-fatec.herokuapp.com/')
 
 //mysql = require('mysql');
 
