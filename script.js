@@ -35,7 +35,9 @@ var idSala;
 var cliqueNoTabuleiro;
 
 const socket = io.connect('http://localhost:5000');
-//const socket = io.connect('http://tic-tac-toe-realtime.herokuapp.com'),
+//const socket = io.connect('http://tic-tac-toe-realtime.herokuapp.com')
+
+//mysql = require('mysql');
 
 //Iniciando jogo
 function initializeGame() {
@@ -127,7 +129,7 @@ function iniciaModal(modalID) {
             
 // Abrindo um novo jogo io
 socket.on('newGame', (data) => {
-    console.log("esperando 2");
+    //console.log("esperando 2");
     idSala = data.room;
     const message =
       `Olá, ${data.name}. Diga para seu oponente entrar da sala ID: 
@@ -139,38 +141,31 @@ socket.on('newGame', (data) => {
 
 // Player 1 recebendo resposta io
 socket.on('player1', (data) => {
-    console.log(data);
     const message = "Seu oponente chegou, pode jogar!";
     document.getElementById("message").innerHTML = message;
-    //player.setCurrentTurn(true);
 });
 
 // Player 2 recebendo resposta io
 socket.on('player2', (data) => {
-    console.log(data);
     idSala = data.room;
-    console.log("o dois ta pronto");
+    //console.log("o dois ta pronto");
     const message = "Pronto, espera seu oponente jogar!";
     // Create game for player 2
-    //game = new Game(data.room);
-    document.getElementById("message").innerHTML = message;
-    //player.setCurrentTurn(false);
+     document.getElementById("message").innerHTML = message;
 });
 
 // Mudança de turno io
 socket.on('turnPlayed', (data) => {
-    console.log(ehMinhaVezDeJogar());
     if(!ehMinhaVezDeJogar()){
-        console.log("recebi!", data);
+        //console.log("recebi!", data);
         const x = data.tile.split(';')[0];
         const y = data.tile.split(';')[1];
-        //console.log(x, y);
         //const opponentType = player.getPlayerType() === P1 ? P2 : P1;
         //game.updateBoard(opponentType, row, col, data.tile);
         //player.setCurrentTurn(true);
+        console.log('recebi e vou fazer o movimento', x, y);
         makeMove(x, y);
     }
-
 });
 
 // erro do io
@@ -183,9 +178,7 @@ socket.on('err', (data) => {
 function playTurn() {
     const clickedTile = cliqueNoTabuleiro;
     // Emit an event to update other player that you've played your turn.
-    //console.log(clickedTile, idSala);
-    //console.log("entrou antes socket");
-    console.log("chamei o pay turn!");
+    console.log('enviar para meu oponente', cliqueNoTabuleiro);
     socket.emit('playTurn', {
         tile: clickedTile,
         room: idSala,
@@ -198,14 +191,14 @@ function recomecarJogo() {
 
 //mudar nome e vez do jogador
 function mudarTurnoJogador(name, code) {
-    console.log(name, code);
+    //console.log(name, code);
     document.getElementById("turn").innerHTML = name;
     vezDeQualJogador = code;
 }
 
 // Verificar vez do jogador
 function ehMinhaVezDeJogar() {
-    console.log(vezDeQualJogador, quemEuSou1or2);
+    //console.log(vezDeQualJogador, quemEuSou1or2);
     if(vezDeQualJogador == quemEuSou1or2) {
         return true
     } else {
@@ -245,7 +238,8 @@ function makeMove(X, Y) {
     var yCenter;
     var xCenter;
     cliqueNoTabuleiro = X+";"+Y;
-    console.log(cliqueNoTabuleiro);
+    X = Number(X);
+    Y = Number(Y);
 
     switch (X) {
         case 0: {
@@ -405,7 +399,9 @@ function makeMove(X, Y) {
         }
     }
 
+
     if (isMillGreen || isMillRed) {
+        console.log('fiz uma trilha');
         //In this case don't change player turn and remove other player block in next click
         //Nesse caso, não muda o turno do jogador e remove o bloco de outro jogador no próximo clique
         var playerCode = (isMillGreen) ? 1 : 2;
@@ -432,7 +428,10 @@ function makeMove(X, Y) {
                 turnOffMill();
                 update();
                 //Mandar informação para o outro player
-                playTurn();
+                console.log(ehMinhaVezDeJogar(), vezDeQualJogador, quemEuSou1or2);
+                if(!ehMinhaVezDeJogar()){
+                    playTurn();
+                }
             }
             else {
                 document.getElementById("message").innerHTML = "Não é possível remover um bloco que já faz parte da trilha";
@@ -441,7 +440,6 @@ function makeMove(X, Y) {
     }
 
     else if (numberOfTurns >= 18 && (isActiveRed || isActiveGreen)) {
-
         if ((((X == lastX) && (Y == lastY)) || (positionMatrix[X][Y] == 1 || positionMatrix[X][Y] == 2))) {
             turnOffActive(lastCenterX, lastCenterY);
         }
@@ -506,9 +504,10 @@ function makeMove(X, Y) {
         }
     }
 
+    
     else if (positionMatrix[X][Y] == 0 && numberOfTurns < 18) {
         //Mandar informação para o outro player
-        playTurn();
+        //playTurn();
         clickSound.play();
         if (numberOfTurns % 2 != 0) {
             //Player two made a move, hence made a block red.
@@ -524,11 +523,13 @@ function makeMove(X, Y) {
             mudarTurnoJogador(namePlayer1, 1);
             //document.getElementById("turn").innerHTML = namePlayer1 /*"Verde"*/;
             if (checkMill(X, Y, 2)) {
+                console.log('fiz uma trilha vermelha');
                 isMillRed = true;
                 mudarTurnoJogador(namePlayer2, 2);
                 //document.getElementById("turn").innerHTML = namePlayer2 /*"Vermelho"*/;
                 document.getElementById("message").innerHTML = "Trilha formada. Clique em uma peça verde e remova.";
                 trilhaSound.play();
+                playTurn();
             } else {
                 document.getElementById("message").innerHTML = "Clique em um lugar vazio para colocar sua peça";
             }
@@ -548,11 +549,13 @@ function makeMove(X, Y) {
             mudarTurnoJogador(namePlayer2, 2);
             //document.getElementById("turn").innerHTML = namePlayer2 /*"Vermelho"*/;
             if (checkMill(X, Y, 1)) {
+                console.log('fiz uma trilha verde');
                 isMillGreen = true;
                 mudarTurnoJogador(namePlayer1, 1);
                 //document.getElementById("turn").innerHTML = namePlayer1 /*"Verde"*/;
                 document.getElementById("message").innerHTML = "Trilha formada. Clique em uma peça vermelha e remova.";
                 trilhaSound.play();
+                playTurn();
             } else {
                 document.getElementById("message").innerHTML = "Clique em um lugar vazio para colocar sua peça";
             }
@@ -560,7 +563,11 @@ function makeMove(X, Y) {
         if (numberOfTurns == 17) {
             document.getElementById("message").innerHTML = "Agora, mova a peça para um bloco vazio";
         }
+
         numberOfTurns++;
+        if(!ehMinhaVezDeJogar()){
+            playTurn();
+        }
     }
 
     else if (numberOfTurns >= 18 && positionMatrix[X][Y] != 0) {
@@ -613,7 +620,7 @@ function makeMove(X, Y) {
             //Mandar informação para o outro player
             playTurn();
         }
-    }
+    } 
     checkGameOver();
 }
 
@@ -720,6 +727,7 @@ function turnOffMill() {
     isMillRed = false;
 }
 
+//limpar peça
 function clearBlock(xI, yI) {
     clickSound.play();
     //Lipa a posição anterior
@@ -728,7 +736,7 @@ function clearBlock(xI, yI) {
     positionMatrix[lastX][lastY] = 0;
 }
 
-//Formação da trilha
+//Verifica depois de formar trilha
 function drawBlock(x, y, X, Y) {
     context.beginPath();
     context.arc(x, y, blockWidth, 0, 2 * Math.PI, false);
@@ -765,7 +773,6 @@ function drawBlock(x, y, X, Y) {
 }
 
 function checkMill(x, y, playerCode) {
-    //Using the fact that two mills cannot occur simultaneously
     //Usando o fato de que duas trilhas não podem ocorrer simultaneamente
     var flag = 0;
     var temp = 0;
@@ -841,6 +848,7 @@ function checkMill(x, y, playerCode) {
     return false;
 }
 
+//Verifica se ja pode possuir alguma trilha
 function checkThreeLeft(playerCode) {
     return (numberOfTurns >= 18 && (((playerCode == 1) ? greenBlocks : redBlocks) == 3 ))
 }
