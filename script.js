@@ -35,8 +35,8 @@ var idSala;
 var cliqueNoTabuleiro;
 
 //para subir o app, use npm install e depois npm start
-//const socket = io.connect('http://localhost:5000');
-const socket = io.connect('https://trilha-fatec.herokuapp.com/')
+const socket = io.connect('http://localhost:5000');
+//const socket = io.connect('https://trilha-fatec.herokuapp.com/')
 
 //mysql = require('mysql');
 
@@ -88,10 +88,8 @@ function iniciaModal(modalID) {
             multiPLayer = true;
             mudarTurnoJogador(name, 1);
             quemEuSou1or2 = 1;
-            //document.getElementById("turn").innerHTML = name;
             namePlayer1 = name;
             namePlayer2 = "Oponente";
-            //player = new Player(name, P2);
         }
 
         else if (e.target.id == "btnDoisMesmaMaq") {
@@ -102,8 +100,6 @@ function iniciaModal(modalID) {
                 alert("Insira os nomes do dois Jogadores!");
             } else {
                 modal.classList.remove("mostrar");
-                //alert(namePlayer1 + /*verde*/" começa com VERDE, em seguida "+ namePlayer2 /*vermelho*/ + " com VERMELHO");
-                //document.getElementById("turn").innerHTML = namePlayer1;
                 mudarTurnoJogador(namePlayer1, 1);
             }
         }
@@ -120,10 +116,8 @@ function iniciaModal(modalID) {
               multiPLayer = true;
               mudarTurnoJogador(name, 1);
               quemEuSou1or2 = 2;
-              //document.getElementById("turn").innerHTML = name;
               namePlayer1 = "Oponente";
               namePlayer2 = name;
-              //player = new Player(name, P2);
         };
     });
 }
@@ -164,7 +158,6 @@ socket.on('turnPlayed', (data) => {
         //const opponentType = player.getPlayerType() === P1 ? P2 : P1;
         //game.updateBoard(opponentType, row, col, data.tile);
         //player.setCurrentTurn(true);
-        console.log('recebi e vou fazer o movimento', x, y);
         makeMove(x, y);
     }
 });
@@ -179,7 +172,6 @@ socket.on('err', (data) => {
 function playTurn() {
     const clickedTile = cliqueNoTabuleiro;
     // Emit an event to update other player that you've played your turn.
-    console.log('enviar para meu oponente', cliqueNoTabuleiro);
     socket.emit('playTurn', {
         tile: clickedTile,
         room: idSala,
@@ -192,7 +184,7 @@ function recomecarJogo() {
 
 //mudar nome e vez do jogador
 function mudarTurnoJogador(name, code) {
-    //console.log(name, code);
+    console.log("vez do ", code);
     document.getElementById("turn").innerHTML = name;
     vezDeQualJogador = code;
 }
@@ -402,7 +394,6 @@ function makeMove(X, Y) {
 
 
     if (isMillGreen || isMillRed) {
-        console.log('fiz uma trilha');
         //In this case don't change player turn and remove other player block in next click
         //Nesse caso, não muda o turno do jogador e remove o bloco de outro jogador no próximo clique
         var playerCode = (isMillGreen) ? 1 : 2;
@@ -429,7 +420,6 @@ function makeMove(X, Y) {
                 turnOffMill();
                 update();
                 //Mandar informação para o outro player
-                console.log(ehMinhaVezDeJogar(), vezDeQualJogador, quemEuSou1or2);
                 if(!ehMinhaVezDeJogar()){
                     playTurn();
                 }
@@ -458,6 +448,9 @@ function makeMove(X, Y) {
                         drawBlock(xCenter, yCenter, X, Y);
                         //Mandar informação para o outro player
                         playTurn();
+                        if(isMillRed == false && isMillGreen == false) {
+                            update();
+                        }
                     }
                 } else if (X == 1 || X == 5 || Y == 1 || Y == 5) {
                     if (((Math.abs(X - lastX) + Math.abs(Y - lastY)) == 2 ) || ((Math.abs(X - lastX) + Math.abs(Y - lastY)) == 1 )) {
@@ -468,6 +461,9 @@ function makeMove(X, Y) {
                         drawBlock(xCenter, yCenter, X, Y);
                         //Mandar informação para o outro player
                         playTurn();
+                        if(isMillRed == false && isMillGreen == false) {
+                            update();
+                        }
                     }
                 } else if (X == 2 || X == 4 || Y == 2 || Y == 4) {
                     if (((Math.abs(X - lastX) + Math.abs(Y - lastY)) == 1 )) {
@@ -478,6 +474,9 @@ function makeMove(X, Y) {
                         drawBlock(xCenter, yCenter, X, Y);
                         //Mandar informação para o outro player
                         playTurn();
+                        if(isMillRed == false && isMillGreen == false) {
+                            update();
+                        }
                     }
                 }
 
@@ -488,6 +487,7 @@ function makeMove(X, Y) {
                     drawBlock(xCenter, yCenter, X, Y);
                     //Mandar informação para o outro player
                     playTurn();
+                    console.log("4");
                 }
                 else if (isRedThreeLeft && (positionMatrix[lastX][lastY] == playerTwoCode)) {
                     positionMatrix[lastX][lastY] = 0;
@@ -495,13 +495,13 @@ function makeMove(X, Y) {
                     drawBlock(xCenter, yCenter, X, Y);
                     //Mandar informação para o outro player
                     playTurn();
+                    console.log("5");
                 }
                 else {
                     turnOffActive(lastCenterX, lastCenterY);
                 }
 
             }
-
         }
     }
 
@@ -524,7 +524,6 @@ function makeMove(X, Y) {
             mudarTurnoJogador(namePlayer1, 1);
             //document.getElementById("turn").innerHTML = namePlayer1 /*"Verde"*/;
             if (checkMill(X, Y, 2)) {
-                console.log('fiz uma trilha vermelha');
                 isMillRed = true;
                 mudarTurnoJogador(namePlayer2, 2);
                 //document.getElementById("turn").innerHTML = namePlayer2 /*"Vermelho"*/;
@@ -550,7 +549,6 @@ function makeMove(X, Y) {
             mudarTurnoJogador(namePlayer2, 2);
             //document.getElementById("turn").innerHTML = namePlayer2 /*"Vermelho"*/;
             if (checkMill(X, Y, 1)) {
-                console.log('fiz uma trilha verde');
                 isMillGreen = true;
                 mudarTurnoJogador(namePlayer1, 1);
                 //document.getElementById("turn").innerHTML = namePlayer1 /*"Verde"*/;
@@ -749,6 +747,7 @@ function drawBlock(x, y, X, Y) {
             document.getElementById("message").innerHTML = "Trilha formada. Clique em uma peça Verde e remova.";
             trilhaSound.play();
             //Mandar informação para o outro player
+            mudarTurnoJogador(namePlayer2, 2);
             playTurn();
         }
     } else {
@@ -759,6 +758,7 @@ function drawBlock(x, y, X, Y) {
             document.getElementById("message").innerHTML = "Trilha formada. Clique em uma peça Vermelha e remova.";
             trilhaSound.play();
             //Mandar informação para o outro player
+            mudarTurnoJogador(namePlayer1, 1);  
             playTurn();
         }
     }
@@ -770,7 +770,7 @@ function drawBlock(x, y, X, Y) {
     isActiveGreen = false;
     isActiveRed = false;
     numberOfTurns++;
-    update();
+    //update();  
 }
 
 function checkMill(x, y, playerCode) {
