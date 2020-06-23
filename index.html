@@ -90,21 +90,6 @@
 <!--Home-->
 <div id="home-login" class="home-container">
     <div class="home">
-        <div class="entrar">
-            <h3 class="texto-home">Criar sala: </h3>
-            <form>
-                <br>
-                <br>
-                <input type="text" class="input-nome" placeholder="Nome">
-                <br>
-                <br>
-                <br>
-                <input id="btnSozinho" type="button" class="comecar" value="Começar">
-            </form>
-        </div>
-        <div>
-            fatec-sp
-        </div>
         <div class="local">
             <h3 class="texto-home">2 mesmo computador: </h3>
             <form>
@@ -121,14 +106,29 @@
         <div>
             fatec-sp
         </div>
+        <div class="entrar">
+            <h3 class="texto-home">Criar sala: </h3>
+            <form>
+                <br>
+                <br>
+                <input id="nameNew" type="text" class="input-nome" placeholder="Nome">
+                <br>
+                <br>
+                <br>
+                <input id="btnSozinho" type="button" class="comecar" value="Começar">
+            </form>
+        </div>
+        <div>
+            fatec-sp
+        </div>
         <div class="multiplayer">
             <h3 class="texto-home">Entrar na sala: </h3>
             <form>
                 <br>
-                <input type="text" class="input-nome" placeholder="#Id" onkeypress="return event.charCode >= 48 && event.charCode <= 57">
+                <input id="room" type="text" class="input-nome" placeholder="#Id">
                 <br>
                 <br>
-                <input type="text" class="input-nome" placeholder="Nome">
+                <input id="nameJoin" type="text" class="input-nome" placeholder="Nome">
                 <br>
                 <br>
                 <input id="btnMultiplayer" type="button" class="comecar" value="Entrar">
@@ -136,6 +136,7 @@
         </div>
     </div>
 </div>
+<script src="/socket.io/socket.io.js"></script>
 <script src="script.js"></script>
 </body>
 </html>

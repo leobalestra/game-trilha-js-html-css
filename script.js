@@ -28,8 +28,18 @@ var positionMatrix = new Array(7);
 var referenceMatrix = new Array(7);
 var canvas = document.getElementById("myCanvas");
 var context = canvas.getContext("2d");
+var multiPLayer = false;
+var vezDeQualJogador;
+var quemEuSou1or2;
+var idSala;
+var cliqueNoTabuleiro;
 
+const socket = io.connect('http://localhost:5000');
+//const socket = io.connect('http://tic-tac-toe-realtime.herokuapp.com')
 
+//mysql = require('mysql');
+
+//Iniciando jogo
 function initializeGame() {
     clickSound  = new sound("sounds/sound.wav");
     deathSound  = new sound("sounds/soundExplosion.wav");
@@ -45,9 +55,9 @@ function initializeGame() {
 
     iniciaModal("home-login");
     initializeArray();
-    
 }
 
+//Som do jogo
 function sound(src) {
     this.sound = document.createElement("audio");
     this.sound.src = src;
@@ -60,13 +70,29 @@ function sound(src) {
     }
 }
 
+//Iniciando menu
 function iniciaModal(modalID) {
     const modal = document.getElementById(modalID);
     modal.classList.add("mostrar");
     modal.addEventListener('click', (e) => {
+
         if(e.target.id == "btnSozinho") {
-            alert("EM DESENVOLVIMENTO");
+            const name = document.getElementById("nameNew").value;
+            if (!name) {
+                alert('Coloque um nome para começar!');
+                return;
+            }
+            socket.emit('createGame', { name });
+            modal.classList.remove("mostrar");
+            multiPLayer = true;
+            mudarTurnoJogador(name, 1);
+            quemEuSou1or2 = 1;
+            //document.getElementById("turn").innerHTML = name;
+            namePlayer1 = name;
+            namePlayer2 = "Oponente";
+            //player = new Player(name, P2);
         }
+
         else if (e.target.id == "btnDoisMesmaMaq") {
             namePlayer1 = document.getElementById("nome1").value;
             namePlayer2 = document.getElementById("nome2").value;
@@ -76,19 +102,112 @@ function iniciaModal(modalID) {
             } else {
                 modal.classList.remove("mostrar");
                 //alert(namePlayer1 + /*verde*/" começa com VERDE, em seguida "+ namePlayer2 /*vermelho*/ + " com VERMELHO");
-                document.getElementById("turn").innerHTML = namePlayer1
+                //document.getElementById("turn").innerHTML = namePlayer1;
+                mudarTurnoJogador(namePlayer1, 1);
             }
         }
+
         else if (e.target.id == "btnMultiplayer") {
-            alert("EM DESENVOLVIMENTO");
+              const name = document.getElementById("nameJoin").value;
+              const roomID = document.getElementById("room").value;
+              if (!name || !roomID) {
+                alert('Coloque o ID da Sala e o Nome!');
+                return;
+              }
+              socket.emit('joinGame', { name, room: roomID });
+              modal.classList.remove("mostrar");
+              multiPLayer = true;
+              mudarTurnoJogador(name, 1);
+              quemEuSou1or2 = 2;
+              //document.getElementById("turn").innerHTML = name;
+              namePlayer1 = "Oponente";
+              namePlayer2 = name;
+              //player = new Player(name, P2);
         };
     });
+}
+            
+// Abrindo um novo jogo io
+socket.on('newGame', (data) => {
+    //console.log("esperando 2");
+    idSala = data.room;
+    const message =
+      `Olá, ${data.name}. Diga para seu oponente entrar da sala ID: 
+      ${data.room}. Esperando player 2...`;
+
+    // Create game for player 1
+    document.getElementById("message").innerHTML = message;
+});
+
+// Player 1 recebendo resposta io
+socket.on('player1', (data) => {
+    const message = "Seu oponente chegou, pode jogar!";
+    document.getElementById("message").innerHTML = message;
+});
+
+// Player 2 recebendo resposta io
+socket.on('player2', (data) => {
+    idSala = data.room;
+    //console.log("o dois ta pronto");
+    const message = "Pronto, espera seu oponente jogar!";
+    // Create game for player 2
+     document.getElementById("message").innerHTML = message;
+});
+
+// Mudança de turno io
+socket.on('turnPlayed', (data) => {
+    if(!ehMinhaVezDeJogar()){
+        //console.log("recebi!", data);
+        const x = data.tile.split(';')[0];
+        const y = data.tile.split(';')[1];
+        //const opponentType = player.getPlayerType() === P1 ? P2 : P1;
+        //game.updateBoard(opponentType, row, col, data.tile);
+        //player.setCurrentTurn(true);
+        console.log('recebi e vou fazer o movimento', x, y);
+        makeMove(x, y);
+    }
+});
+
+// erro do io
+socket.on('err', (data) => {
+    alert("A sala está cheia!");
+    location.reload();
+});
+
+// enviar jogadas para outro jogador
+function playTurn() {
+    const clickedTile = cliqueNoTabuleiro;
+    // Emit an event to update other player that you've played your turn.
+    console.log('enviar para meu oponente', cliqueNoTabuleiro);
+    socket.emit('playTurn', {
+        tile: clickedTile,
+        room: idSala,
+      });
 }
 
 function recomecarJogo() {
     location.reload(true);
 }
 
+//mudar nome e vez do jogador
+function mudarTurnoJogador(name, code) {
+    //console.log(name, code);
+    document.getElementById("turn").innerHTML = name;
+    vezDeQualJogador = code;
+}
+
+// Verificar vez do jogador
+function ehMinhaVezDeJogar() {
+    //console.log(vezDeQualJogador, quemEuSou1or2);
+    if(vezDeQualJogador == quemEuSou1or2) {
+        return true
+    } else {
+        return false;
+    };
+    return true;
+}
+
+//inicia array do tabuleiro
 function initializeArray() {
     for (var i = 0; i < 7; i++) {
         referenceMatrix[i] = new Array(7);
@@ -97,7 +216,6 @@ function initializeArray() {
 
     for (var j = 0; j < 7; j++) {
         for (var k = 0; k < 7; k++) {
-            //Make all diagonal elements + boundary + center to zero
             //Torne todos os elementos diagonais + fronteira + centro para zero
             if ((j == 3) || (k == 3) || (j == k) || (j + k == 6)) {
                 referenceMatrix[j][k] = 0;
@@ -109,16 +227,19 @@ function initializeArray() {
             }
         }
     }
-    //Finally making center also -1
     //Finaliza fazendo centro também -1
     referenceMatrix[3][3] = -1;
     positionMatrix[3][3] = -1;
 
 }
 
+//Recebe movimento clicado pelo mouse
 function makeMove(X, Y) {
     var yCenter;
     var xCenter;
+    cliqueNoTabuleiro = X+";"+Y;
+    X = Number(X);
+    Y = Number(Y);
 
     switch (X) {
         case 0: {
@@ -278,7 +399,9 @@ function makeMove(X, Y) {
         }
     }
 
+
     if (isMillGreen || isMillRed) {
+        console.log('fiz uma trilha');
         //In this case don't change player turn and remove other player block in next click
         //Nesse caso, não muda o turno do jogador e remove o bloco de outro jogador no próximo clique
         var playerCode = (isMillGreen) ? 1 : 2;
@@ -293,6 +416,7 @@ function makeMove(X, Y) {
                     redBlocks--;
                     document.getElementById("message").innerHTML = "Peça vermelha removida";
                     deathSound.play();
+
                 } else {
                     document.getElementById("message").innerHTML = "Peça verde removida";
                     greenBlocks--;
@@ -303,6 +427,11 @@ function makeMove(X, Y) {
                 positionMatrix[X][Y] = 0;
                 turnOffMill();
                 update();
+                //Mandar informação para o outro player
+                console.log(ehMinhaVezDeJogar(), vezDeQualJogador, quemEuSou1or2);
+                if(!ehMinhaVezDeJogar()){
+                    playTurn();
+                }
             }
             else {
                 document.getElementById("message").innerHTML = "Não é possível remover um bloco que já faz parte da trilha";
@@ -311,7 +440,6 @@ function makeMove(X, Y) {
     }
 
     else if (numberOfTurns >= 18 && (isActiveRed || isActiveGreen)) {
-
         if ((((X == lastX) && (Y == lastY)) || (positionMatrix[X][Y] == 1 || positionMatrix[X][Y] == 2))) {
             turnOffActive(lastCenterX, lastCenterY);
         }
@@ -327,6 +455,8 @@ function makeMove(X, Y) {
                         positionMatrix[lastX][lastY] = 0;
                         clearBlock(lastCenterX, lastCenterY);
                         drawBlock(xCenter, yCenter, X, Y);
+                        //Mandar informação para o outro player
+                        playTurn();
                     }
                 } else if (X == 1 || X == 5 || Y == 1 || Y == 5) {
                     if (((Math.abs(X - lastX) + Math.abs(Y - lastY)) == 2 ) || ((Math.abs(X - lastX) + Math.abs(Y - lastY)) == 1 )) {
@@ -335,6 +465,8 @@ function makeMove(X, Y) {
                         positionMatrix[lastX][lastY] = 0;
                         clearBlock(lastCenterX, lastCenterY);
                         drawBlock(xCenter, yCenter, X, Y);
+                        //Mandar informação para o outro player
+                        playTurn();
                     }
                 } else if (X == 2 || X == 4 || Y == 2 || Y == 4) {
                     if (((Math.abs(X - lastX) + Math.abs(Y - lastY)) == 1 )) {
@@ -343,6 +475,8 @@ function makeMove(X, Y) {
                         positionMatrix[lastX][lastY] = 0;
                         clearBlock(lastCenterX, lastCenterY);
                         drawBlock(xCenter, yCenter, X, Y);
+                        //Mandar informação para o outro player
+                        playTurn();
                     }
                 }
 
@@ -351,11 +485,15 @@ function makeMove(X, Y) {
                     positionMatrix[lastX][lastY] = 0;
                     clearBlock(lastCenterX, lastCenterY);
                     drawBlock(xCenter, yCenter, X, Y);
+                    //Mandar informação para o outro player
+                    playTurn();
                 }
                 else if (isRedThreeLeft && (positionMatrix[lastX][lastY] == playerTwoCode)) {
                     positionMatrix[lastX][lastY] = 0;
                     clearBlock(lastCenterX, lastCenterY);
                     drawBlock(xCenter, yCenter, X, Y);
+                    //Mandar informação para o outro player
+                    playTurn();
                 }
                 else {
                     turnOffActive(lastCenterX, lastCenterY);
@@ -366,8 +504,10 @@ function makeMove(X, Y) {
         }
     }
 
+    
     else if (positionMatrix[X][Y] == 0 && numberOfTurns < 18) {
-
+        //Mandar informação para o outro player
+        //playTurn();
         clickSound.play();
         if (numberOfTurns % 2 != 0) {
             //Player two made a move, hence made a block red.
@@ -380,12 +520,16 @@ function makeMove(X, Y) {
             context.lineWidth = strokeWidth;
             context.strokeStyle = '#003300';
             context.stroke();
-            document.getElementById("turn").innerHTML = namePlayer1 /*"Verde"*/;
+            mudarTurnoJogador(namePlayer1, 1);
+            //document.getElementById("turn").innerHTML = namePlayer1 /*"Verde"*/;
             if (checkMill(X, Y, 2)) {
+                console.log('fiz uma trilha vermelha');
                 isMillRed = true;
-                document.getElementById("turn").innerHTML = namePlayer2 /*"Vermelho"*/;
+                mudarTurnoJogador(namePlayer2, 2);
+                //document.getElementById("turn").innerHTML = namePlayer2 /*"Vermelho"*/;
                 document.getElementById("message").innerHTML = "Trilha formada. Clique em uma peça verde e remova.";
                 trilhaSound.play();
+                playTurn();
             } else {
                 document.getElementById("message").innerHTML = "Clique em um lugar vazio para colocar sua peça";
             }
@@ -402,12 +546,16 @@ function makeMove(X, Y) {
             context.lineWidth = strokeWidth;
             context.strokeStyle = '#003300';
             context.stroke();
-            document.getElementById("turn").innerHTML = namePlayer2 /*"Vermelho"*/;
+            mudarTurnoJogador(namePlayer2, 2);
+            //document.getElementById("turn").innerHTML = namePlayer2 /*"Vermelho"*/;
             if (checkMill(X, Y, 1)) {
+                console.log('fiz uma trilha verde');
                 isMillGreen = true;
-                document.getElementById("turn").innerHTML = namePlayer1 /*"Verde"*/;
+                mudarTurnoJogador(namePlayer1, 1);
+                //document.getElementById("turn").innerHTML = namePlayer1 /*"Verde"*/;
                 document.getElementById("message").innerHTML = "Trilha formada. Clique em uma peça vermelha e remova.";
                 trilhaSound.play();
+                playTurn();
             } else {
                 document.getElementById("message").innerHTML = "Clique em um lugar vazio para colocar sua peça";
             }
@@ -415,7 +563,11 @@ function makeMove(X, Y) {
         if (numberOfTurns == 17) {
             document.getElementById("message").innerHTML = "Agora, mova a peça para um bloco vazio";
         }
+
         numberOfTurns++;
+        if(!ehMinhaVezDeJogar()){
+            playTurn();
+        }
     }
 
     else if (numberOfTurns >= 18 && positionMatrix[X][Y] != 0) {
@@ -442,6 +594,8 @@ function makeMove(X, Y) {
             context.lineWidth = strokeWidth;
             context.strokeStyle = '#003300';
             context.stroke();
+            //Mandar informação para o outro player
+            playTurn();
         }
         else if (numberOfTurns % 2 == 0 && positionMatrix[X][Y] == 1) {
             //Player one just made a move, hence made a block green.
@@ -463,78 +617,83 @@ function makeMove(X, Y) {
             context.lineWidth = strokeWidth;
             context.strokeStyle = '#003300';
             context.stroke();
+            //Mandar informação para o outro player
+            playTurn();
         }
-
-    }
+    } 
     checkGameOver();
 }
 
 canvas.addEventListener("click", mouseClick);
 
+//Evento do clique no tabuleiro
 function mouseClick(event) {
-    //Get the X and Y co-ordinate at the point of touch in canvas
     //Obtenha as coordenadas X e Y quando toca na tela
     var X = event.clientX - (canvas.getBoundingClientRect()).left;
     var Y = event.clientY - (canvas.getBoundingClientRect()).top;
 
-    //Check if touch event occurs in canvas or not
     //Verifica se o evento de toque ocorre na tela ou não
     if ((X >= 0 && X <= 550) && (Y >= 0 && Y <= 550)) {
-        if ((X >= 0 && X <= 75) && (Y >= 0 && Y <= 75)) {
-            makeMove(0, 0);
-        } else if ((X >= 235 && X <= 315) && (Y >= 0 && Y <= 75)) {
-            makeMove(3, 0);
-        } else if ((X >= 475 && X <= 550) && (Y >= 0 && Y <= 75)) {
-            makeMove(6, 0);
-        }
-        else if ((X >= 75 && X <= 155) && (Y >= 75 && Y <= 155)) {
-            makeMove(1, 1);
-        } else if ((X >= 235 && X <= 315) && (Y >= 75 && Y <= 155)) {
-            makeMove(3, 1);
-        } else if ((X >= 395 && X <= 475) && (Y >= 75 && Y <= 155)) {
-            makeMove(5, 1);
-        }
-        else if ((X >= 155 && X <= 235) && (Y >= 155 && Y <= 235)) {
-            makeMove(2, 2);
-        } else if ((X >= 235 && X <= 315) && (Y >= 155 && Y <= 235)) {
-            makeMove(3, 2);
-        } else if ((X >= 315 && X <= 395) && (Y >= 155 && Y <= 235)) {
-            makeMove(4, 2);
-        }
-        else if ((X >= 0 && X <= 75) && (Y >= 235 && Y <= 315)) {
-            makeMove(0, 3);
-        } else if ((X >= 75 && X <= 155) && (Y >= 235 && Y <= 315)) {
-            makeMove(1, 3);
-        } else if ((X >= 155 && X <= 235) && (Y >= 235 && Y <= 315)) {
-            makeMove(2, 3);
-        } else if ((X >= 315 && X <= 395) && (Y >= 235 && Y <= 315)) {
-            makeMove(4, 3);
-        } else if ((X >= 395 && X <= 475) && (Y >= 235 && Y <= 315)) {
-            makeMove(5, 3);
-        } else if ((X >= 475 && X <= 550) && (Y >= 235 && Y <= 315)) {
-            makeMove(6, 3);
-        }
-        else if ((X >= 155 && X <= 235) && (Y >= 315 && Y <= 395)) {
-            makeMove(2, 4);
-        } else if ((X >= 235 && X <= 315) && (Y >= 315 && Y <= 395)) {
-            makeMove(3, 4);
-        } else if ((X >= 315 && X <= 395) && (Y >= 315 && Y <= 395)) {
-            makeMove(4, 4);
-        }
-        else if ((X >= 75 && X <= 155) && (Y >= 395 && Y <= 475)) {
-            makeMove(1, 5);
-        } else if ((X >= 235 && X <= 315) && (Y >= 395 && Y <= 475)) {
-            makeMove(3, 5);
-        } else if ((X >= 395 && X <= 475) && (Y >= 395 && Y <= 475)) {
-            makeMove(5, 5);
-        }
-
-        else if ((X >= 0 && X <= 75) && (Y >= 475 && Y <= 550)) {
-            makeMove(0, 6);
-        } else if ((X >= 235 && X <= 315) && (Y >= 475 && Y <= 550)) {
-            makeMove(3, 6);
-        } else if ((X >= 475 && X <= 550) && (Y >= 475 && Y <= 550)) {
-            makeMove(6, 6);
+        //Se for multiplayer verificar se é a vez no jogador
+        if (multiPLayer && !ehMinhaVezDeJogar()) {
+            alert("Não é sua vez.\nEspere seu oponente jogar!");
+        } else {
+            if ((X >= 0 && X <= 75) && (Y >= 0 && Y <= 75)) {
+                makeMove(0, 0);
+            } else if ((X >= 235 && X <= 315) && (Y >= 0 && Y <= 75)) {
+                makeMove(3, 0);
+            } else if ((X >= 475 && X <= 550) && (Y >= 0 && Y <= 75)) {
+                makeMove(6, 0);
+            }
+            else if ((X >= 75 && X <= 155) && (Y >= 75 && Y <= 155)) {
+                makeMove(1, 1);
+            } else if ((X >= 235 && X <= 315) && (Y >= 75 && Y <= 155)) {
+                makeMove(3, 1);
+            } else if ((X >= 395 && X <= 475) && (Y >= 75 && Y <= 155)) {
+                makeMove(5, 1);
+            }
+            else if ((X >= 155 && X <= 235) && (Y >= 155 && Y <= 235)) {
+                makeMove(2, 2);
+            } else if ((X >= 235 && X <= 315) && (Y >= 155 && Y <= 235)) {
+                makeMove(3, 2);
+            } else if ((X >= 315 && X <= 395) && (Y >= 155 && Y <= 235)) {
+                makeMove(4, 2);
+            }
+            else if ((X >= 0 && X <= 75) && (Y >= 235 && Y <= 315)) {
+                makeMove(0, 3);
+            } else if ((X >= 75 && X <= 155) && (Y >= 235 && Y <= 315)) {
+                makeMove(1, 3);
+            } else if ((X >= 155 && X <= 235) && (Y >= 235 && Y <= 315)) {
+                makeMove(2, 3);
+            } else if ((X >= 315 && X <= 395) && (Y >= 235 && Y <= 315)) {
+                makeMove(4, 3);
+            } else if ((X >= 395 && X <= 475) && (Y >= 235 && Y <= 315)) {
+                makeMove(5, 3);
+            } else if ((X >= 475 && X <= 550) && (Y >= 235 && Y <= 315)) {
+                makeMove(6, 3);
+            }
+            else if ((X >= 155 && X <= 235) && (Y >= 315 && Y <= 395)) {
+                makeMove(2, 4);
+            } else if ((X >= 235 && X <= 315) && (Y >= 315 && Y <= 395)) {
+                makeMove(3, 4);
+            } else if ((X >= 315 && X <= 395) && (Y >= 315 && Y <= 395)) {
+                makeMove(4, 4);
+            }
+            else if ((X >= 75 && X <= 155) && (Y >= 395 && Y <= 475)) {
+                makeMove(1, 5);
+            } else if ((X >= 235 && X <= 315) && (Y >= 395 && Y <= 475)) {
+                makeMove(3, 5);
+            } else if ((X >= 395 && X <= 475) && (Y >= 395 && Y <= 475)) {
+                makeMove(5, 5);
+            }
+    
+            else if ((X >= 0 && X <= 75) && (Y >= 475 && Y <= 550)) {
+                makeMove(0, 6);
+            } else if ((X >= 235 && X <= 315) && (Y >= 475 && Y <= 550)) {
+                makeMove(3, 6);
+            } else if ((X >= 475 && X <= 550) && (Y >= 475 && Y <= 550)) {
+                makeMove(6, 6);
+            }
         }
     }
 }
@@ -568,16 +727,16 @@ function turnOffMill() {
     isMillRed = false;
 }
 
+//limpar peça
 function clearBlock(xI, yI) {
     clickSound.play();
-    //Clear canvas at previous position
     //Lipa a posição anterior
     context.clearRect(xI - blockWidth - strokeWidth, yI - blockWidth - strokeWidth,
         2 * (blockWidth + strokeWidth), 2 * ( blockWidth + strokeWidth));
     positionMatrix[lastX][lastY] = 0;
-
 }
 
+//Verifica depois de formar trilha
 function drawBlock(x, y, X, Y) {
     context.beginPath();
     context.arc(x, y, blockWidth, 0, 2 * Math.PI, false);
@@ -588,6 +747,8 @@ function drawBlock(x, y, X, Y) {
             isMillRed = true;
             document.getElementById("message").innerHTML = "Trilha formada. Clique em uma peça Verde e remova.";
             trilhaSound.play();
+            //Mandar informação para o outro player
+            playTurn();
         }
     } else {
         positionMatrix[X][Y] = 1;
@@ -596,6 +757,8 @@ function drawBlock(x, y, X, Y) {
             isMillGreen = true;
             document.getElementById("message").innerHTML = "Trilha formada. Clique em uma peça Vermelha e remova.";
             trilhaSound.play();
+            //Mandar informação para o outro player
+            playTurn();
         }
     }
     context.fill();
@@ -610,7 +773,6 @@ function drawBlock(x, y, X, Y) {
 }
 
 function checkMill(x, y, playerCode) {
-    //Using the fact that two mills cannot occur simultaneously
     //Usando o fato de que duas trilhas não podem ocorrer simultaneamente
     var flag = 0;
     var temp = 0;
@@ -686,14 +848,15 @@ function checkMill(x, y, playerCode) {
     return false;
 }
 
+//Verifica se ja pode possuir alguma trilha
 function checkThreeLeft(playerCode) {
     return (numberOfTurns >= 18 && (((playerCode == 1) ? greenBlocks : redBlocks) == 3 ))
 }
 
+//Verifica se o jogo acabou
 function checkGameOver() {
-    //If less than 3 players left of any team.
-    //Se restarem menos de 3 jogadores de qualquer equipe.
     if (numberOfTurns >= 18) {
+        //Se restarem menos de 3 peças de qualquer equipe.
         if (redBlocks < 3 || greenBlocks < 3) {
             alert("Restam apenas 2 blocos " + ((greenBlocks < 3) ? namePlayer1 /*"Green"*/ : namePlayer2 /*"Red"*/) + "!\n" +
                 "Logo, Jogador " + ((greenBlocks < 3) ? namePlayer2 /*2*/ : namePlayer1 /*1*/) + " é Campeão!");
@@ -701,7 +864,6 @@ function checkGameOver() {
             //location.reload(true);
         }
         else {
-            //Check if no adjacent element available for any of the player.
             //Verifica se não há nenhum elemento adjacente disponível para nenhum jogador.
             if (!canMove(playerOneCode, greenBlocks)) {
                 alert("Nenhum movimento possível para o Jogador " + namePlayer1 /*playerOneCode*/ + "\n" +
@@ -718,6 +880,7 @@ function checkGameOver() {
     }
 }
 
+//Verifica de todos fazem parte de uma trilha
 function allArePartOfMill(playerCode) {
     //return false if atleast one of them is not a part of the mill
     //retorna falso se pelo menos um deles não fizer parte da trilha
@@ -734,14 +897,14 @@ function allArePartOfMill(playerCode) {
     return true;
 }
 
+//Retorna true or false dependendo pra ele ele quer ir
 function canMove(playerCode, blocksLeft) {
-    //If only 3 are left then it can always move anywhere
     //Se restarem apenas 3, ele sempre poderá se mover para qualquer lugar
     if (blocksLeft == 3) {
         return true;
     }
-    //return true even if one of them have at least one valid move left
     //retorna true mesmo se um deles tiver pelo menos um movimento válido restante
+    //só podendo ir para baixo, cima, esquerda, direita
     for (var i = 0; i < rows; i++) {
         for (var j = 0; j < columns; j++) {
             if (positionMatrix[j][i] == playerCode) {
@@ -815,9 +978,11 @@ function canMove(playerCode, blocksLeft) {
 
 function update() {
     if (numberOfTurns % 2 != 0) {
-        document.getElementById("turn").innerHTML = namePlayer2;
+        mudarTurnoJogador(namePlayer2, 2);
+        //document.getElementById("turn").innerHTML = namePlayer2;
     } else {
-        document.getElementById("turn").innerHTML = namePlayer1;
+        mudarTurnoJogador(namePlayer1, 1)
+        //document.getElementById("turn").innerHTML = namePlayer1;
     }
 }
 
