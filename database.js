@@ -1,22 +1,36 @@
-mysql = require('mysql');
-connectionString = 'mysql://b792382a36ff4e:344a5e08@us-cdbr-east-05.cleardb.net/heroku_af5f33ed8f091e3';
+const mysql = require('mysql');
 
-db = {};
-db.cnn = {};
-db.cnn.exec = function(query, callback) {
-    var connection = mysql.creaeConnection(connectionString);
-    connection.query(query, function(err, rows) {
-        if(err) throw err;
-        callback(rows, err);
-        connection.end();
-    });
-};
+const con = mysql.createConnection({
+    host: 'us-cdbr-east-05.cleardb.net',
+    user: 'b792382a36ff4e',
+    password: '344a5e08',
+    database: 'heroku_af5f33ed8f091e3'
+});
 
-var App = {
+con.connect((err) => {
+    if (err) {
+        console.log('Erro connecting to database...', err)
+        return
+    }
+    console.log('Connection established!')
+});
 
-    
-}
-connection.connect(function(err){
-    if(err) return console.log(err);
-    console.log('conectou!');
+con.query('SELECT * FROM tb_img_back', (err, rows) => {
+    if (err) throw err
+
+    console.log('Backgrounds: ', rows, '\n\n')
+});
+
+con.query('SELECT * FROM tb_img_tabu', (err, rows) => {
+    if (err) throw err
+
+    console.log('Tabuleiros: ', rows, '\n\n')
+});
+
+con.end((err) => {
+    if(err) {
+        console.log('Erro to finish connection...', err)
+        return 
+    }
+    console.log('The connection was finish...')
 });
