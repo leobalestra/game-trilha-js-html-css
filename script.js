@@ -57,6 +57,7 @@ function initializeGame() {
     iniciaModal("home-login");
     initializeArray();
     document.getElementById("room").value = "room-";
+    document.getElementById("message").innerHTML = "Clique em um lugar para começar!";
 }
 
 //Som do jogo
@@ -991,36 +992,36 @@ function update() {
 function trocarImagem(caminho) {
     var id = caminho.id;
     if(id == 'tab_cap') {
-        document.getElementById('myCanvas').style = "background-image: url('images/main.png');";
+        document.getElementById('myCanvas').style = "background-image: url('https://i.imgur.com/Bb5MBC6.png');";
         capSound.play();
     } else if (id == 'tab_ferro'){
-        document.getElementById('myCanvas').style = "background-image: url('images/main1.png');";
+        document.getElementById('myCanvas').style = "background-image: url('https://i.imgur.com/GMTKy3S.png');";
         ferroSound.play();
     } else if (id == 'tab_aranha'){
-        document.getElementById('myCanvas').style = "background-image: url('images/main2.png');";
+        document.getElementById('myCanvas').style = "background-image: url('https://i.imgur.com/bEcM7vf.png');";
         aranhaSound.play();
     } else if (id == 'tab_hulk'){
-        document.getElementById('myCanvas').style = "background-image: url('images/main3.png');";
+        document.getElementById('myCanvas').style = "background-image: url('https://i.imgur.com/OyJQlJ6.png');";
         hulkSound.play();
     } else if (id == 'tab_thanos'){
-        document.getElementById('myCanvas').style = "background-image: url('images/main4.png');";
+        document.getElementById('myCanvas').style = "background-image: url('https://i.imgur.com/SC1zm0B.png');";
         thanosSound.play();
     } else if (id == 'tab_viuva'){
-        document.getElementById('myCanvas').style = "background-image: url('images/main5.png');";
+        document.getElementById('myCanvas').style = "background-image: url('https://i.imgur.com/sWYgwRl.png');";
         viuvaSound.play();
     }else if (id == 'back_geral'){
-        document.getElementById('body').style = "background-image: url('images/background.jpg');";
+        document.getElementById('body').style = "background-image: url('https://i.imgur.com/rUCxEg6.jpg');";
     }else if (id == 'back_cap'){
-        document.getElementById('body').style = "background-image: url('images/background1.jpg');";
+        document.getElementById('body').style = "background-image: url('https://i.imgur.com/7ItESRn.jpg');";
     }else if (id == 'back_ferro'){
-        document.getElementById('body').style = "background-image: url('images/background2.jpg');";
+        document.getElementById('body').style = "background-image: url('https://i.imgur.com/36kA8jG.jpg');";
     }else if (id == 'back_aranha'){
-        document.getElementById('body').style = "background-image: url('images/background3.jpg');";
+        document.getElementById('body').style = "background-image: url('https://i.imgur.com/dQ7rA28.jpg');";
     }else if (id == 'back_hulk'){
-        document.getElementById('body').style = "background-image: url('images/background4.jpg');";
+        document.getElementById('body').style = "background-image: url('https://i.imgur.com/ImscUyp.jpg');";
     }else if (id == 'back_thanos'){
-        document.getElementById('body').style = "background-image: url('images/background5.jpg');";
+        document.getElementById('body').style = "background-image: url('https://i.imgur.com/jjjT6dP.jpg');";
     }else if (id == 'back_viuva'){
-        document.getElementById('body').style = "background-image: url('images/background6.jpg');";
+        document.getElementById('body').style = "background-image: url('https://i.imgur.com/F0ebQMf.jpg');";
     }
 }
