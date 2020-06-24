@@ -9,6 +9,20 @@
     <title>Trilha dos Heróis</title>
     <link href='https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700' rel='stylesheet' type='text/css'>
     <link rel="shortcut icon" href="images/favicon.ico" />
+    <SCRIPT TYPE=”text/javascript”>
+        function submitenter(myfield,e) {
+            var keycode;
+            if (window.event) keycode = window.event.keyCode;
+            else if (e) keycode = e.which;
+            else return true;
+        
+            if (keycode == 13) {
+                myfield.form.submit();
+                return false;
+            } else
+                return true;
+            }
+        </SCRIPT>
 </head>
 <body id="body" onload="initializeGame()" style="background-image: url('images/background.jpg');">
 
@@ -82,7 +96,6 @@
     
 </div>
 
-
 <p class="copyright">Copyright &#169
     <script type="text/javascript">document.write(new Date().getFullYear());</script>
 </p>
@@ -125,7 +138,7 @@
             <h3 class="texto-home">Entrar na sala: </h3>
             <form>
                 <br>
-                <input id="room" type="text" class="input-nome" placeholder="#Id">
+                <input id="room" type="text" class="input-nome" placeholder="#Id" >
                 <br>
                 <br>
                 <input id="nameJoin" type="text" class="input-nome" placeholder="Nome">

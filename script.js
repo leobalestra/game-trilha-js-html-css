@@ -35,8 +35,8 @@ var idSala;
 var cliqueNoTabuleiro;
 
 //para subir o app, use npm install e depois npm start
-//const socket = io.connect('http://localhost:5000');
-const socket = io.connect('https://trilha-fatec.herokuapp.com/')
+const socket = io.connect('http://localhost:5000');
+//const socket = io.connect('https://trilha-fatec.herokuapp.com/')
 
 //mysql = require('mysql');
 
@@ -56,6 +56,7 @@ function initializeGame() {
 
     iniciaModal("home-login");
     initializeArray();
+    document.getElementById("room").value = "room-";
 }
 
 //Som do jogo
