@@ -186,7 +186,7 @@ function recomecarJogo() {
 
 //mudar nome e vez do jogador
 function mudarTurnoJogador(name, code) {
-    console.log("vez do ", code);
+    //console.log("vez do ", code);
     document.getElementById("turn").innerHTML = name;
     vezDeQualJogador = code;
 }
@@ -433,8 +433,9 @@ function makeMove(X, Y) {
     }
 
     else if (numberOfTurns >= 18 && (isActiveRed || isActiveGreen)) {
-        if ((((X == lastX) && (Y == lastY)) || (positionMatrix[X][Y] == 1 || positionMatrix[X][Y] == 2))) {
+        if (((X == lastX) && (Y == lastY)) || (positionMatrix[X][Y] == 1 || positionMatrix[X][Y] == 2)) {
             turnOffActive(lastCenterX, lastCenterY);
+            playTurn();
         }
 
         if ((positionMatrix[X][Y] == 0)) {
@@ -489,7 +490,9 @@ function makeMove(X, Y) {
                     drawBlock(xCenter, yCenter, X, Y);
                     //Mandar informação para o outro player
                     playTurn();
-                    console.log("4");
+                    if(isMillRed == false && isMillGreen == false) {
+                        update();
+                    }
                 }
                 else if (isRedThreeLeft && (positionMatrix[lastX][lastY] == playerTwoCode)) {
                     positionMatrix[lastX][lastY] = 0;
@@ -497,12 +500,13 @@ function makeMove(X, Y) {
                     drawBlock(xCenter, yCenter, X, Y);
                     //Mandar informação para o outro player
                     playTurn();
-                    console.log("5");
+                    if(isMillRed == false && isMillGreen == false) {
+                        update();
+                    }
                 }
                 else {
-                    turnOffActive(lastCenterX, lastCenterY);
+                    //turnOffActive(lastCenterX, lastCenterY);
                 }
-
             }
         }
     }
@@ -555,7 +559,7 @@ function makeMove(X, Y) {
                 mudarTurnoJogador(namePlayer1, 1);
                 //document.getElementById("turn").innerHTML = namePlayer1 /*"Verde"*/;
                 document.getElementById("message").innerHTML = "Trilha formada. Clique em uma peça vermelha e remova.";
-                trilhaSound.play();
+                trilhaSound.play(); 
                 playTurn();
             } else {
                 document.getElementById("message").innerHTML = "Clique em um lugar vazio para colocar sua peça";
