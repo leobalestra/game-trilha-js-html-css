@@ -38,8 +38,6 @@ var cliqueNoTabuleiro;
 //const socket = io.connect('http://localhost:5000');
 const socket = io.connect('https://trilha-fatec.herokuapp.com/')
 
-//mysql = require('mysql');
-
 //Iniciando jogo
 function initializeGame() {
     clickSound  = new sound("sounds/sound.wav");
@@ -54,10 +52,48 @@ function initializeGame() {
     hulkSound = new sound("sounds/soundHulk.wav");
     viuvaSound = new sound("sounds/soundViuva.wav");
 
+    getIp(function (ip) {
+        console.log(ip);
+    });
     iniciaModal("home-login");
     initializeArray();
     document.getElementById("room").value = "room-";
     document.getElementById("message").innerHTML = "Clique em um lugar para começar!";
+}
+
+//pegarIP
+function getIp(callback)
+{
+    function response(s)
+    {
+        callback(window.userip);
+
+        s.onload = s.onerror = null;
+        document.body.removeChild(s);
+    }
+
+    function trigger()
+    {
+        window.userip = false;
+
+        var s = document.createElement("script");
+        s.async = true;
+        s.onload = function() {
+            response(s);
+        };
+        s.onerror = function() {
+            response(s);
+        };
+
+        s.src = "https://l2.io/ip.js?var=userip";
+        document.body.appendChild(s);
+    }
+
+    if (/^(interactive|complete)$/i.test(document.readyState)) {
+        trigger();
+    } else {
+        document.addEventListener('DOMContentLoaded', trigger);
+    }
 }
 
 //Som do jogo
@@ -869,6 +905,16 @@ function checkGameOver() {
                 "Logo, Jogador " + ((greenBlocks < 3) ? namePlayer2 /*2*/ : namePlayer1 /*1*/) + " é Campeão!");
             winnerSound.play();
             //location.reload(true);
+            if (greenBlocks < 3 && quemEuSou1or2 == 2) {
+                getIp(function (ip) {
+                    console.log(ip);
+                });
+            }
+            else if (redBlocks < 3 && quemEuSou1or2 == 1){
+                getIp(function (ip) {
+                    console.log(ip);
+                });
+            };
         }
         else {
             //Verifica se não há nenhum elemento adjacente disponível para nenhum jogador.
@@ -877,11 +923,21 @@ function checkGameOver() {
                     "Logo, Jogador " + namePlayer2 /*playerTwoCode*/ + " é Campeão!");
                 winnerSound.play();
                 //location.reload(true);
+                if(quemEuSou1or2 == 2 ){
+                    getIp(function (ip) {
+                        console.log(ip);
+                    });
+                }
             } else if (!canMove(playerTwoCode, redBlocks)) {
                 alert("Nenhum movimento possível para o Jogador " + namePlayer2 /*playerTwoCode*/ + "\n" +
                     "Logo, Jogador " + namePlayer1 /*playerOneCode*/ + " é Campeão!");
                 winnerSound.play();
                 //location.reload(true);
+                if(quemEuSou1or2 == 1 ){
+                    getIp(function (ip) {
+                        console.log(ip);
+                    });
+                }
             }
         }
     }
@@ -999,33 +1055,113 @@ function trocarImagem(caminho) {
         document.getElementById('myCanvas').style = "background-image: url('https://i.imgur.com/Bb5MBC6.png');";
         capSound.play();
     } else if (id == 'tab_ferro'){
-        document.getElementById('myCanvas').style = "background-image: url('https://i.imgur.com/GMTKy3S.png');";
-        ferroSound.play();
+        if (varificarVitorias() > 0) {
+            document.getElementById('myCanvas').style = "background-image: url('https://i.imgur.com/GMTKy3S.png');";
+            ferroSound.play();
+        }
+        else {
+            alert("Você precisa ter ao menos 1 vitória!");
+        }
     } else if (id == 'tab_aranha'){
-        document.getElementById('myCanvas').style = "background-image: url('https://i.imgur.com/bEcM7vf.png');";
-        aranhaSound.play();
+        if (varificarVitorias() > 1) {
+            document.getElementById('myCanvas').style = "background-image: url('https://i.imgur.com/bEcM7vf.png');";
+            aranhaSound.play();
+        }
+        else {
+            alert("Você precisa ter mais de 1 vitória!");
+        }
     } else if (id == 'tab_hulk'){
-        document.getElementById('myCanvas').style = "background-image: url('https://i.imgur.com/OyJQlJ6.png');";
-        hulkSound.play();
+        if (varificarVitorias() > 2) {
+            document.getElementById('myCanvas').style = "background-image: url('https://i.imgur.com/OyJQlJ6.png');";
+            hulkSound.play();
+        }
+        else {
+            alert("Você precisa ter mais de 2 vitórias!");
+        }
     } else if (id == 'tab_thanos'){
-        document.getElementById('myCanvas').style = "background-image: url('https://i.imgur.com/SC1zm0B.png');";
-        thanosSound.play();
+        if (varificarVitorias() > 3) {
+            document.getElementById('myCanvas').style = "background-image: url('https://i.imgur.com/SC1zm0B.png');";
+            thanosSound.play();
+        }
+        else {
+            alert("Você precisa ter mais de 3 vitórias!");
+        }
     } else if (id == 'tab_viuva'){
-        document.getElementById('myCanvas').style = "background-image: url('https://i.imgur.com/sWYgwRl.png');";
-        viuvaSound.play();
+        if (varificarVitorias() > 4) {
+            document.getElementById('myCanvas').style = "background-image: url('https://i.imgur.com/sWYgwRl.png');";
+            viuvaSound.play();
+        }
+        else {
+            alert("Você precisa ter mais de 4 vitórias!");
+        }
+    
+    /*BACKGROUND*/ 
     }else if (id == 'back_geral'){
         document.getElementById('body').style = "background-image: url('https://i.imgur.com/rUCxEg6.jpg');";
     }else if (id == 'back_cap'){
-        document.getElementById('body').style = "background-image: url('https://i.imgur.com/7ItESRn.jpg');";
+        if (varificarVitorias() > 0) {
+            document.getElementById('body').style = "background-image: url('https://i.imgur.com/7ItESRn.jpg');";
+        }
+        else {
+            alert("Você precisa ter ao menos 1 vitória!");
+        }
     }else if (id == 'back_ferro'){
-        document.getElementById('body').style = "background-image: url('https://i.imgur.com/36kA8jG.jpg');";
+        if (varificarVitorias() > 1) {
+            document.getElementById('body').style = "background-image: url('https://i.imgur.com/36kA8jG.jpg');";
+        }
+        else {
+            alert("Você precisa ter mais de 1 vitória!");
+        }
     }else if (id == 'back_aranha'){
-        document.getElementById('body').style = "background-image: url('https://i.imgur.com/dQ7rA28.jpg');";
+        if (varificarVitorias() > 2) {
+            document.getElementById('body').style = "background-image: url('https://i.imgur.com/dQ7rA28.jpg');";
+        }
+        else {
+            alert("Você precisa ter mais de 2 vitórias!");
+        }
     }else if (id == 'back_hulk'){
-        document.getElementById('body').style = "background-image: url('https://i.imgur.com/ImscUyp.jpg');";
+        if (varificarVitorias() > 3) {
+            document.getElementById('body').style = "background-image: url('https://i.imgur.com/ImscUyp.jpg');";
+        }
+        else {
+            alert("Você precisa ter mais de 3 vitórias!");
+        }
     }else if (id == 'back_thanos'){
-        document.getElementById('body').style = "background-image: url('https://i.imgur.com/jjjT6dP.jpg');";
+        if (varificarVitorias() > 4) {
+            document.getElementById('body').style = "background-image: url('https://i.imgur.com/jjjT6dP.jpg');";
+        }
+        else {
+            alert("Você precisa ter mais de 4 vitórias!");
+        }
     }else if (id == 'back_viuva'){
-        document.getElementById('body').style = "background-image: url('https://i.imgur.com/F0ebQMf.jpg');";
+        if (varificarVitorias() > 5) {
+            document.getElementById('body').style = "background-image: url('https://i.imgur.com/F0ebQMf.jpg');";
+        }
+        else {
+            alert("Você precisa ter mais de 5 vitórias!");
+        }
     }
+}
+
+function varificarVitorias() {
+    var dscIp;
+    getIp(function (ip) {
+        dscIp = ip;
+        console.log("Seu IP é " + dscIp);
+    });
+
+    return 3;
+
+    /*banco*/
+    /*var query = "SELECT count(*) FROM tb_vitorias_ip where ip = '201.0.68.111'";
+    db.cnn.exec(query, function(dadosRetornados, erro) {
+        if(erro){
+            console.log("Erro banco de dados");
+            return 0;
+        }
+        else{
+            console.log(dadosRetornados);
+            return dadosRetornados;
+        }
+    });*/
 }
