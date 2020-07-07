@@ -11,3 +11,16 @@ db.cnn.exec = function(query, callback) {
         connection.end();
     });
 };
+
+/*
+var query = "SELECT count(*) FROM tb_vitorias_ip where ip = '201.0.68.111'";
+db.cnn.exec(query, function(dadosRetornados, erro) {
+    if(erro){
+        console.log("Erro banco de dados");
+        return 0;
+    }
+    else{
+        console.log(dadosRetornados);
+        return dadosRetornados;
+    }
+});*/
