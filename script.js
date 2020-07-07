@@ -38,8 +38,6 @@ var cliqueNoTabuleiro;
 //const socket = io.connect('http://localhost:5000');
 const socket = io.connect('https://trilha-fatec.herokuapp.com/')
 
-//mysql = require('mysql');
-
 //Iniciando jogo
 function initializeGame() {
     clickSound  = new sound("sounds/sound.wav");
@@ -54,10 +52,48 @@ function initializeGame() {
     hulkSound = new sound("sounds/soundHulk.wav");
     viuvaSound = new sound("sounds/soundViuva.wav");
 
+    getIp(function (ip) {
+        console.log(ip);
+    });
     iniciaModal("home-login");
     initializeArray();
     document.getElementById("room").value = "room-";
     document.getElementById("message").innerHTML = "Clique em um lugar para começar!";
+}
+
+//pegarIP
+function getIp(callback)
+{
+    function response(s)
+    {
+        callback(window.userip);
+
+        s.onload = s.onerror = null;
+        document.body.removeChild(s);
+    }
+
+    function trigger()
+    {
+        window.userip = false;
+
+        var s = document.createElement("script");
+        s.async = true;
+        s.onload = function() {
+            response(s);
+        };
+        s.onerror = function() {
+            response(s);
+        };
+
+        s.src = "https://l2.io/ip.js?var=userip";
+        document.body.appendChild(s);
+    }
+
+    if (/^(interactive|complete)$/i.test(document.readyState)) {
+        trigger();
+    } else {
+        document.addEventListener('DOMContentLoaded', trigger);
+    }
 }
 
 //Som do jogo
@@ -869,6 +905,16 @@ function checkGameOver() {
                 "Logo, Jogador " + ((greenBlocks < 3) ? namePlayer2 /*2*/ : namePlayer1 /*1*/) + " é Campeão!");
             winnerSound.play();
             //location.reload(true);
+            if (greenBlocks < 3 && quemEuSou1or2 == 2) {
+                getIp(function (ip) {
+                    console.log(ip);
+                });
+            }
+            else if (redBlocks < 3 && quemEuSou1or2 == 1){
+                getIp(function (ip) {
+                    console.log(ip);
+                });
+            };
         }
         else {
             //Verifica se não há nenhum elemento adjacente disponível para nenhum jogador.
@@ -877,11 +923,21 @@ function checkGameOver() {
                     "Logo, Jogador " + namePlayer2 /*playerTwoCode*/ + " é Campeão!");
                 winnerSound.play();
                 //location.reload(true);
+                if(quemEuSou1or2 == 2 ){
+                    getIp(function (ip) {
+                        console.log(ip);
+                    });
+                }
             } else if (!canMove(playerTwoCode, redBlocks)) {
                 alert("Nenhum movimento possível para o Jogador " + namePlayer2 /*playerTwoCode*/ + "\n" +
                     "Logo, Jogador " + namePlayer1 /*playerOneCode*/ + " é Campeão!");
                 winnerSound.play();
                 //location.reload(true);
+                if(quemEuSou1or2 == 1 ){
+                    getIp(function (ip) {
+                        console.log(ip);
+                    });
+                }
             }
         }
     }
@@ -996,36 +1052,70 @@ function update() {
 function trocarImagem(caminho) {
     var id = caminho.id;
     if(id == 'tab_cap') {
+        varificarVitorias();
         document.getElementById('myCanvas').style = "background-image: url('https://i.imgur.com/Bb5MBC6.png');";
         capSound.play();
     } else if (id == 'tab_ferro'){
+        varificarVitorias();
         document.getElementById('myCanvas').style = "background-image: url('https://i.imgur.com/GMTKy3S.png');";
         ferroSound.play();
     } else if (id == 'tab_aranha'){
+        varificarVitorias();
         document.getElementById('myCanvas').style = "background-image: url('https://i.imgur.com/bEcM7vf.png');";
         aranhaSound.play();
     } else if (id == 'tab_hulk'){
+        varificarVitorias();
         document.getElementById('myCanvas').style = "background-image: url('https://i.imgur.com/OyJQlJ6.png');";
         hulkSound.play();
     } else if (id == 'tab_thanos'){
+        varificarVitorias();
         document.getElementById('myCanvas').style = "background-image: url('https://i.imgur.com/SC1zm0B.png');";
         thanosSound.play();
     } else if (id == 'tab_viuva'){
+        varificarVitorias();
         document.getElementById('myCanvas').style = "background-image: url('https://i.imgur.com/sWYgwRl.png');";
         viuvaSound.play();
     }else if (id == 'back_geral'){
+        varificarVitorias();
         document.getElementById('body').style = "background-image: url('https://i.imgur.com/rUCxEg6.jpg');";
     }else if (id == 'back_cap'){
+        varificarVitorias();
         document.getElementById('body').style = "background-image: url('https://i.imgur.com/7ItESRn.jpg');";
     }else if (id == 'back_ferro'){
+        varificarVitorias();
         document.getElementById('body').style = "background-image: url('https://i.imgur.com/36kA8jG.jpg');";
     }else if (id == 'back_aranha'){
+        varificarVitorias();
         document.getElementById('body').style = "background-image: url('https://i.imgur.com/dQ7rA28.jpg');";
     }else if (id == 'back_hulk'){
+        varificarVitorias();
         document.getElementById('body').style = "background-image: url('https://i.imgur.com/ImscUyp.jpg');";
     }else if (id == 'back_thanos'){
+        varificarVitorias();
         document.getElementById('body').style = "background-image: url('https://i.imgur.com/jjjT6dP.jpg');";
     }else if (id == 'back_viuva'){
+        varificarVitorias();
         document.getElementById('body').style = "background-image: url('https://i.imgur.com/F0ebQMf.jpg');";
     }
+}
+
+function varificarVitorias() {
+    var dscIp;
+    getIp(function (ip) {
+        dscIp = ip;
+        console.log("Seu IP é " + dscIp);
+    });
+
+    
+    /*var query = "SELECT count(*) FROM tb_vitorias_ip where ip = '201.0.68.111'";
+    database.db.cnn.exec(query, function(dadosRetornados, erro) {
+        if(erro){
+            console.log("Erro banco de dados");
+            return 0;
+        }
+        else{
+            console.log(dadosRetornados);
+            return dadosRetornados;
+        }
+    });*/
 }
