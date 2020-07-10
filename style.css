@@ -6,7 +6,7 @@
 .header {
     font-family: 'Bangers', cursive;
     text-align: center;
-    padding: 10px;
+    padding: 5px;
     font-size: 20px;
     text-shadow:#000 1px -2px, #000 -1px 2px, #000 1px 2px, #000 -1px -2px;
 }
@@ -41,15 +41,16 @@
 
 .div_reload {
     font-family: 'Bangers', cursive;
-    font-size: 15px;
+    text-align: center;
+    font-size: 25px;
     color: white;
     text-shadow:#000 1px -2px, #000 -1px 2px, #000 1px 2px, #000 -1px -2px;
 }
 
 .reload {
-    float: right;
+    /*float: right;
     margin-right: 410px;
-    font-size: 15px;
+    font-size: 15px;*/
     cursor: pointer;
     color: black;
     text-shadow:#FFF 1px -2px, #FFF -1px 2px, #FFF 1px 2px, #FFF -1px -2px;
@@ -167,4 +168,89 @@ canvas {
         transform: translate3d(0, 0, 0);
     }
 
+}
+
+/*VITORIA E DERROTA*/
+.Perdedor-container {
+    width: 100vw;
+    height: 100vh;
+    background: rgb(0,0,0,.5);
+    display: none; /*flex*/
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;    
+}
+
+.Perdedor-container.mostrar {
+    display: flex;
+}
+
+.mostrar .Perdedor {
+    animation: ganhador_ani .8s;
+}
+
+.Perdedor {
+    background: white;
+    display: flex;
+    min-width: 300px;
+    padding: 40px;
+    border: 10px solid #554e4e;
+    box-shadow: 0 0 0 5px black;
+    border-radius: 10px;
+}
+
+/*perdedor*/
+.Ganhador-container {
+    width: 100vw;
+    height: 100vh;
+    background: rgb(0,0,0,.5);
+    display: none;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;    
+}
+
+.Ganhador-container.mostrar {
+    display: flex;
+}
+
+.mostrar .Ganhador {
+    animation: ganhador_ani .8s;
+}
+
+.Ganhador {
+    background: white;
+    display: flex;
+    min-width: 300px;
+    padding: 40px;
+    border: 10px solid #554e4e;
+    box-shadow: 0 0 0 5px black;
+    border-radius: 10px;
+}
+
+
+
+.jogarNovamente {
+    margin: auto;
+    text-align: center;
+    border-radius: 10px;
+    font-family: 'Bangers', cursive;
+    font-size: 30px;
+    width:300px;
+    height: 60px;
+    cursor: pointer;
+}
+
+.texto-Perdedor {
+    color: #000000;
+    margin: auto;
+    line-height: 40px;
+    font-size: 40px;
+    font-family: 'Bangers', cursive;
 }

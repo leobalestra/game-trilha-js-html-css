@@ -27,6 +27,7 @@
 </div>
 
 <div class="div_reload">
+    <span id="vitorias"></span>
     <span class="reload"><span id="reload" onclick="recomecarJogo()">RECOMEÇAR</span></span>      
 </div>
 
@@ -84,7 +85,7 @@
     
 </div>
 
-<p class="copyright">Copyright &#169
+<p class="copyright" onclick="aumentar1Vitoria()">Copyright &#169
     <script type="text/javascript">document.write(new Date().getFullYear());</script>
 </p>
 
@@ -112,7 +113,7 @@
             <form>
                 <br>
                 <br>
-                <input id="nameNew" type="text" class="input-nome" placeholder="Nome">
+                <input id="nameNew" type="text" class="input-nome" placeholder="Seu Nome">
                 <br>
                 <br>
                 <br>
@@ -129,7 +130,7 @@
                 <input id="room" type="text" class="input-nome" placeholder="#Id" >
                 <br>
                 <br>
-                <input id="nameJoin" type="text" class="input-nome" placeholder="Nome">
+                <input id="nameJoin" type="text" class="input-nome" placeholder="Seu Nome">
                 <br>
                 <br>
                 <input id="btnMultiplayer" type="button" class="comecar" value="Entrar">
@@ -137,8 +138,36 @@
         </div>
     </div>
 </div>
+
+<!--Perdedor-->
+<div id="Perdedor-login" class="Perdedor-container">
+    <div class="Perdedor">
+        <div class="local">
+            <h3 class="texto-Perdedor">Você Perdeu!</h3>
+            <br>
+            <img src=https://pt.bloggif.com/output/7/9/79b226e6c59feed4d7d3dff56cc8968e.gif?1594406881/>
+            <br>
+            <br>
+            <input id="btnJogarNovamente" type="button" class="jogarNovamente" value="Jogar Novamente">
+        </div>
+    </div>
+</div>
+
+
+<div id="Ganhador-login" class="Ganhador-container">
+    <div class="Ganhador">
+        <div class="local">
+            <h3 class="texto-Perdedor">Você Ganhou!</h3>
+            <br>
+            <img src=https://pt.bloggif.com/output/7/9/79b226e6c59feed4d7d3dff56cc8968e.gif?1594406881/>
+            <br>
+            <br>
+            <input id="btnJogarNovamente" type="button" class="jogarNovamente" value="Jogar Novamente">
+        </div>
+    </div>
+</div>
+
 <script src="/socket.io/socket.io.js"></script>
-<script src="database.js"></script>
 <script src="script.js"></script>
 </body>
 </html>

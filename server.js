@@ -20,11 +20,13 @@ io.on('connection', (socket) => {
     socket.on('createGame', (data) => {
         socket.join(`room-${++rooms}`);
         socket.emit('newGame', { name: data.name, room: `room-${rooms}` });
+        console.log(data.name, rooms);
     });
 
     // Conectar jogador 2. Erro para sala cheia.
     socket.on('joinGame', function (data) {
         var room = io.nsps['/'].adapter.rooms[data.room];
+        console.log(data, room);
         if (room && room.length === 1) {
             socket.join(data.room);
             socket.broadcast.to(data.room).emit('player1', {});
@@ -41,11 +43,12 @@ io.on('connection', (socket) => {
             room: data.room
         });
     });
-/*
+
     // Notify the players about the victor.
     socket.on('gameEnded', (data) => {
         socket.broadcast.to(data.room).emit('gameEnd', data);
-    });*/
+        console.log("fim de jogo enviado");
+    });
 });
 
 server.listen(process.env.PORT || 5000);
