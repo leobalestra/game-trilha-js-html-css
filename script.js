@@ -33,10 +33,13 @@ var vezDeQualJogador;
 var quemEuSou1or2;
 var idSala;
 var cliqueNoTabuleiro;
+var qtdVitorias = 0;
+var qtdClickModal = 0;
+var qtdClickBotoes = 0;
 
 //para subir o app, use npm install e depois npm start
-//const socket = io.connect('http://localhost:5000');
-const socket = io.connect('https://trilha-fatec.herokuapp.com/')
+const socket = io.connect('http://localhost:5000');
+//const socket = io.connect('https://trilha-fatec.herokuapp.com/')
 
 //Iniciando jogo
 function initializeGame() {
@@ -52,48 +55,11 @@ function initializeGame() {
     hulkSound = new sound("sounds/soundHulk.wav");
     viuvaSound = new sound("sounds/soundViuva.wav");
 
-    getIp(function (ip) {
-        console.log(ip);
-    });
     iniciaModal("home-login");
     initializeArray();
     document.getElementById("room").value = "room-";
+    document.getElementById("vitorias").innerHTML = "Vitórias consecutivas: "+qtdVitorias+" - ";
     document.getElementById("message").innerHTML = "Clique em um lugar para começar!";
-}
-
-//pegarIP
-function getIp(callback)
-{
-    function response(s)
-    {
-        callback(window.userip);
-
-        s.onload = s.onerror = null;
-        document.body.removeChild(s);
-    }
-
-    function trigger()
-    {
-        window.userip = false;
-
-        var s = document.createElement("script");
-        s.async = true;
-        s.onload = function() {
-            response(s);
-        };
-        s.onerror = function() {
-            response(s);
-        };
-
-        s.src = "https://l2.io/ip.js?var=userip";
-        document.body.appendChild(s);
-    }
-
-    if (/^(interactive|complete)$/i.test(document.readyState)) {
-        trigger();
-    } else {
-        document.addEventListener('DOMContentLoaded', trigger);
-    }
 }
 
 //Som do jogo
@@ -111,51 +77,63 @@ function sound(src) {
 
 //Iniciando menu
 function iniciaModal(modalID) {
+    qtdClickModal = 0;
+    qtdClickBotoes = 0;
     const modal = document.getElementById(modalID);
     modal.classList.add("mostrar");
-    modal.addEventListener('click', (e) => {
+    qtdClickModal = qtdClickModal + 1;
 
+    modal.addEventListener('click', (e) => {
         if(e.target.id == "btnSozinho") {
-            const name = document.getElementById("nameNew").value;
-            if (!name) {
-                alert('Coloque um nome para começar!');
-                return;
+            qtdClickBotoes = qtdClickBotoes + 1;
+            if(qtdClickBotoes == qtdClickModal) {
+                const name = document.getElementById("nameNew").value;
+                if (!name) {
+                    alert('Coloque um nome para começar!');
+                    return;
+                }
+                socket.emit('createGame', { name });
+                modal.classList.remove("mostrar");
+                multiPLayer = true;
+                mudarTurnoJogador(name, 1);
+                quemEuSou1or2 = 1;
+                namePlayer1 = name;
+                namePlayer2 = "Oponente";
             }
-            socket.emit('createGame', { name });
-            modal.classList.remove("mostrar");
-            multiPLayer = true;
-            mudarTurnoJogador(name, 1);
-            quemEuSou1or2 = 1;
-            namePlayer1 = name;
-            namePlayer2 = "Oponente";
         }
 
         else if (e.target.id == "btnDoisMesmaMaq") {
-            namePlayer1 = document.getElementById("nome1").value;
-            namePlayer2 = document.getElementById("nome2").value;
-            if(namePlayer1 === undefined || namePlayer1 == null || namePlayer1.trim().length <= 0 ||
-               namePlayer2 === undefined || namePlayer2 == null || namePlayer2.trim().length <= 0){
-                alert("Insira os nomes do dois Jogadores!");
-            } else {
-                modal.classList.remove("mostrar");
-                mudarTurnoJogador(namePlayer1, 1);
+            qtdClickBotoes = qtdClickBotoes + 1;
+            if(qtdClickBotoes == qtdClickModal) {
+                namePlayer1 = document.getElementById("nome1").value;
+                namePlayer2 = document.getElementById("nome2").value;
+                if(namePlayer1 === undefined || namePlayer1 == null || namePlayer1.trim().length <= 0 ||
+                   namePlayer2 === undefined || namePlayer2 == null || namePlayer2.trim().length <= 0){
+                    alert("Insira os nomes do dois Jogadores!");
+                } else {
+                    modal.classList.remove("mostrar");
+                    mudarTurnoJogador(namePlayer1, 1);
+                }
             }
         }
 
         else if (e.target.id == "btnMultiplayer") {
-              const name = document.getElementById("nameJoin").value;
-              const roomID = document.getElementById("room").value;
-              if (!name || !roomID) {
-                alert('Coloque o ID da Sala e o Nome!');
-                return;
-              }
-              socket.emit('joinGame', { name, room: roomID });
-              modal.classList.remove("mostrar");
-              multiPLayer = true;
-              mudarTurnoJogador(name, 1);
-              quemEuSou1or2 = 2;
-              namePlayer1 = "Oponente";
-              namePlayer2 = name;
+            qtdClickBotoes = qtdClickBotoes + 1;
+            if(qtdClickBotoes == qtdClickModal) {
+                const name = document.getElementById("nameJoin").value;
+                const roomID = document.getElementById("room").value;
+                if (!name || !roomID) {
+                    alert('Coloque o ID da Sala e seu Nome!');
+                    return;
+                }
+                socket.emit('joinGame', { name, room: roomID });
+                modal.classList.remove("mostrar");
+                multiPLayer = true;
+                mudarTurnoJogador(name, 1);
+                quemEuSou1or2 = 2;
+                namePlayer1 = "Oponente";
+                namePlayer2 = name;
+            }
         };
     });
 }
@@ -206,6 +184,12 @@ socket.on('err', (data) => {
     location.reload();
 });
 
+//recebendo fim do jogo
+socket.on('gameEnd', (data) => {
+    alert("Seu oponente saiu do jogo!");
+    jogarNovamente();
+});
+
 // enviar jogadas para outro jogador
 function playTurn() {
     const clickedTile = cliqueNoTabuleiro;
@@ -217,7 +201,11 @@ function playTurn() {
 }
 
 function recomecarJogo() {
-    location.reload(true);
+    socket.emit('gameEnded', {
+        tile: null,
+        room: idSala,
+      });
+    jogarNovamente();
 }
 
 //mudar nome e vez do jogador
@@ -669,71 +657,76 @@ canvas.addEventListener("click", mouseClick);
 
 //Evento do clique no tabuleiro
 function mouseClick(event) {
-    //Obtenha as coordenadas X e Y quando toca na tela
-    var X = event.clientX - (canvas.getBoundingClientRect()).left;
-    var Y = event.clientY - (canvas.getBoundingClientRect()).top;
-
-    //Verifica se o evento de toque ocorre na tela ou não
-    if ((X >= 0 && X <= 550) && (Y >= 0 && Y <= 550)) {
-        //Se for multiplayer verificar se é a vez no jogador
-        if (multiPLayer && !ehMinhaVezDeJogar()) {
-            alert("Não é sua vez.\nEspere seu oponente jogar!");
-        } else {
-            if ((X >= 0 && X <= 75) && (Y >= 0 && Y <= 75)) {
-                makeMove(0, 0);
-            } else if ((X >= 235 && X <= 315) && (Y >= 0 && Y <= 75)) {
-                makeMove(3, 0);
-            } else if ((X >= 475 && X <= 550) && (Y >= 0 && Y <= 75)) {
-                makeMove(6, 0);
-            }
-            else if ((X >= 75 && X <= 155) && (Y >= 75 && Y <= 155)) {
-                makeMove(1, 1);
-            } else if ((X >= 235 && X <= 315) && (Y >= 75 && Y <= 155)) {
-                makeMove(3, 1);
-            } else if ((X >= 395 && X <= 475) && (Y >= 75 && Y <= 155)) {
-                makeMove(5, 1);
-            }
-            else if ((X >= 155 && X <= 235) && (Y >= 155 && Y <= 235)) {
-                makeMove(2, 2);
-            } else if ((X >= 235 && X <= 315) && (Y >= 155 && Y <= 235)) {
-                makeMove(3, 2);
-            } else if ((X >= 315 && X <= 395) && (Y >= 155 && Y <= 235)) {
-                makeMove(4, 2);
-            }
-            else if ((X >= 0 && X <= 75) && (Y >= 235 && Y <= 315)) {
-                makeMove(0, 3);
-            } else if ((X >= 75 && X <= 155) && (Y >= 235 && Y <= 315)) {
-                makeMove(1, 3);
-            } else if ((X >= 155 && X <= 235) && (Y >= 235 && Y <= 315)) {
-                makeMove(2, 3);
-            } else if ((X >= 315 && X <= 395) && (Y >= 235 && Y <= 315)) {
-                makeMove(4, 3);
-            } else if ((X >= 395 && X <= 475) && (Y >= 235 && Y <= 315)) {
-                makeMove(5, 3);
-            } else if ((X >= 475 && X <= 550) && (Y >= 235 && Y <= 315)) {
-                makeMove(6, 3);
-            }
-            else if ((X >= 155 && X <= 235) && (Y >= 315 && Y <= 395)) {
-                makeMove(2, 4);
-            } else if ((X >= 235 && X <= 315) && (Y >= 315 && Y <= 395)) {
-                makeMove(3, 4);
-            } else if ((X >= 315 && X <= 395) && (Y >= 315 && Y <= 395)) {
-                makeMove(4, 4);
-            }
-            else if ((X >= 75 && X <= 155) && (Y >= 395 && Y <= 475)) {
-                makeMove(1, 5);
-            } else if ((X >= 235 && X <= 315) && (Y >= 395 && Y <= 475)) {
-                makeMove(3, 5);
-            } else if ((X >= 395 && X <= 475) && (Y >= 395 && Y <= 475)) {
-                makeMove(5, 5);
-            }
-    
-            else if ((X >= 0 && X <= 75) && (Y >= 475 && Y <= 550)) {
-                makeMove(0, 6);
-            } else if ((X >= 235 && X <= 315) && (Y >= 475 && Y <= 550)) {
-                makeMove(3, 6);
-            } else if ((X >= 475 && X <= 550) && (Y >= 475 && Y <= 550)) {
-                makeMove(6, 6);
+    if (multiPLayer && quemEuSou1or2 == 1 && document.getElementById("message").innerHTML.includes('Esperando')) {
+        alert("Seu oponente ainda não chegou, espere!");
+    }
+    else {
+        //Obtenha as coordenadas X e Y quando toca na tela
+        var X = event.clientX - (canvas.getBoundingClientRect()).left;
+        var Y = event.clientY - (canvas.getBoundingClientRect()).top;
+        
+        //Verifica se o evento de toque ocorre na tela ou não
+        if ((X >= 0 && X <= 550) && (Y >= 0 && Y <= 550)) {
+            //Se for multiplayer verificar se é a vez no jogador
+            if (multiPLayer && !ehMinhaVezDeJogar()) {
+                alert("Não é sua vez.\nEspere seu oponente jogar!");
+            } else {
+                if ((X >= 0 && X <= 75) && (Y >= 0 && Y <= 75)) {
+                    makeMove(0, 0);
+                } else if ((X >= 235 && X <= 315) && (Y >= 0 && Y <= 75)) {
+                    makeMove(3, 0);
+                } else if ((X >= 475 && X <= 550) && (Y >= 0 && Y <= 75)) {
+                    makeMove(6, 0);
+                }
+                else if ((X >= 75 && X <= 155) && (Y >= 75 && Y <= 155)) {
+                    makeMove(1, 1);
+                } else if ((X >= 235 && X <= 315) && (Y >= 75 && Y <= 155)) {
+                    makeMove(3, 1);
+                } else if ((X >= 395 && X <= 475) && (Y >= 75 && Y <= 155)) {
+                    makeMove(5, 1);
+                }
+                else if ((X >= 155 && X <= 235) && (Y >= 155 && Y <= 235)) {
+                    makeMove(2, 2);
+                } else if ((X >= 235 && X <= 315) && (Y >= 155 && Y <= 235)) {
+                    makeMove(3, 2);
+                } else if ((X >= 315 && X <= 395) && (Y >= 155 && Y <= 235)) {
+                    makeMove(4, 2);
+                }
+                else if ((X >= 0 && X <= 75) && (Y >= 235 && Y <= 315)) {
+                    makeMove(0, 3);
+                } else if ((X >= 75 && X <= 155) && (Y >= 235 && Y <= 315)) {
+                    makeMove(1, 3);
+                } else if ((X >= 155 && X <= 235) && (Y >= 235 && Y <= 315)) {
+                    makeMove(2, 3);
+                } else if ((X >= 315 && X <= 395) && (Y >= 235 && Y <= 315)) {
+                    makeMove(4, 3);
+                } else if ((X >= 395 && X <= 475) && (Y >= 235 && Y <= 315)) {
+                    makeMove(5, 3);
+                } else if ((X >= 475 && X <= 550) && (Y >= 235 && Y <= 315)) {
+                    makeMove(6, 3);
+                }
+                else if ((X >= 155 && X <= 235) && (Y >= 315 && Y <= 395)) {
+                    makeMove(2, 4);
+                } else if ((X >= 235 && X <= 315) && (Y >= 315 && Y <= 395)) {
+                    makeMove(3, 4);
+                } else if ((X >= 315 && X <= 395) && (Y >= 315 && Y <= 395)) {
+                    makeMove(4, 4);
+                }
+                else if ((X >= 75 && X <= 155) && (Y >= 395 && Y <= 475)) {
+                    makeMove(1, 5);
+                } else if ((X >= 235 && X <= 315) && (Y >= 395 && Y <= 475)) {
+                    makeMove(3, 5);
+                } else if ((X >= 395 && X <= 475) && (Y >= 395 && Y <= 475)) {
+                    makeMove(5, 5);
+                }
+        
+                else if ((X >= 0 && X <= 75) && (Y >= 475 && Y <= 550)) {
+                    makeMove(0, 6);
+                } else if ((X >= 235 && X <= 315) && (Y >= 475 && Y <= 550)) {
+                    makeMove(3, 6);
+                } else if ((X >= 475 && X <= 550) && (Y >= 475 && Y <= 550)) {
+                    makeMove(6, 6);
+                }
             }
         }
     }
@@ -906,14 +899,15 @@ function checkGameOver() {
             winnerSound.play();
             //location.reload(true);
             if (greenBlocks < 3 && quemEuSou1or2 == 2) {
-                getIp(function (ip) {
-                    console.log(ip);
-                });
+                aumentar1Vitoria();
+                iniciaModalVencedor("Ganhador-login");
             }
             else if (redBlocks < 3 && quemEuSou1or2 == 1){
-                getIp(function (ip) {
-                    console.log(ip);
-                });
+                aumentar1Vitoria();
+                iniciaModalVencedor("Ganhador-login");
+            }
+            else {
+                iniciaModalPerdedor("Perdedor-login");
             };
         }
         else {
@@ -924,9 +918,11 @@ function checkGameOver() {
                 winnerSound.play();
                 //location.reload(true);
                 if(quemEuSou1or2 == 2 ){
-                    getIp(function (ip) {
-                        console.log(ip);
-                    });
+                    aumentar1Vitoria();
+                    iniciaModalVencedor("Ganhador-login");
+                }
+                else {
+                    iniciaModalPerdedor("Perdedor-login");
                 }
             } else if (!canMove(playerTwoCode, redBlocks)) {
                 alert("Nenhum movimento possível para o Jogador " + namePlayer2 /*playerTwoCode*/ + "\n" +
@@ -934,13 +930,21 @@ function checkGameOver() {
                 winnerSound.play();
                 //location.reload(true);
                 if(quemEuSou1or2 == 1 ){
-                    getIp(function (ip) {
-                        console.log(ip);
-                    });
+                    aumentar1Vitoria();
+                    iniciaModalVencedor("Ganhador-login");
+                }
+                else {
+                    iniciaModalPerdedor("Perdedor-login");
                 }
             }
         }
     }
+}
+
+//aumentar vitoria
+function aumentar1Vitoria() {
+    qtdVitorias = qtdVitorias + 1;
+    document.getElementById("vitorias").innerHTML = "Vitórias consecutivas: "+qtdVitorias+" - ";
 }
 
 //Verifica de todos fazem parte de uma trilha
@@ -1055,7 +1059,7 @@ function trocarImagem(caminho) {
         document.getElementById('myCanvas').style = "background-image: url('https://i.imgur.com/Bb5MBC6.png');";
         capSound.play();
     } else if (id == 'tab_ferro'){
-        if (varificarVitorias() > 0) {
+        if (qtdVitorias > 0) {
             document.getElementById('myCanvas').style = "background-image: url('https://i.imgur.com/GMTKy3S.png');";
             ferroSound.play();
         }
@@ -1063,105 +1067,181 @@ function trocarImagem(caminho) {
             alert("Você precisa ter ao menos 1 vitória!");
         }
     } else if (id == 'tab_aranha'){
-        if (varificarVitorias() > 1) {
+        if (qtdVitorias > 1) {
             document.getElementById('myCanvas').style = "background-image: url('https://i.imgur.com/bEcM7vf.png');";
             aranhaSound.play();
         }
         else {
-            alert("Você precisa ter mais de 1 vitória!");
+            alert("Você precisa ter mais de 1 vitória consecutiva!");
         }
     } else if (id == 'tab_hulk'){
-        if (varificarVitorias() > 2) {
+        if (qtdVitorias > 2) {
             document.getElementById('myCanvas').style = "background-image: url('https://i.imgur.com/OyJQlJ6.png');";
             hulkSound.play();
         }
         else {
-            alert("Você precisa ter mais de 2 vitórias!");
+            alert("Você precisa ter mais de 2 vitórias consecutivas!");
         }
     } else if (id == 'tab_thanos'){
-        if (varificarVitorias() > 3) {
+        if (qtdVitorias > 3) {
             document.getElementById('myCanvas').style = "background-image: url('https://i.imgur.com/SC1zm0B.png');";
             thanosSound.play();
         }
         else {
-            alert("Você precisa ter mais de 3 vitórias!");
+            alert("Você precisa ter mais de 3 vitórias consecutivas!");
         }
     } else if (id == 'tab_viuva'){
-        if (varificarVitorias() > 4) {
+        if (qtdVitorias > 4) {
             document.getElementById('myCanvas').style = "background-image: url('https://i.imgur.com/sWYgwRl.png');";
             viuvaSound.play();
         }
         else {
-            alert("Você precisa ter mais de 4 vitórias!");
+            alert("Você precisa ter mais de 4 vitórias consecutivas!");
         }
     
     /*BACKGROUND*/ 
     }else if (id == 'back_geral'){
         document.getElementById('body').style = "background-image: url('https://i.imgur.com/rUCxEg6.jpg');";
     }else if (id == 'back_cap'){
-        if (varificarVitorias() > 0) {
+        if (qtdVitorias > 0) {
             document.getElementById('body').style = "background-image: url('https://i.imgur.com/7ItESRn.jpg');";
         }
         else {
             alert("Você precisa ter ao menos 1 vitória!");
         }
     }else if (id == 'back_ferro'){
-        if (varificarVitorias() > 1) {
+        if (qtdVitorias > 1) {
             document.getElementById('body').style = "background-image: url('https://i.imgur.com/36kA8jG.jpg');";
         }
         else {
-            alert("Você precisa ter mais de 1 vitória!");
+            alert("Você precisa ter mais de 1 vitória consecutiva!");
         }
     }else if (id == 'back_aranha'){
-        if (varificarVitorias() > 2) {
+        if (qtdVitorias > 2) {
             document.getElementById('body').style = "background-image: url('https://i.imgur.com/dQ7rA28.jpg');";
         }
         else {
-            alert("Você precisa ter mais de 2 vitórias!");
+            alert("Você precisa ter mais de 2 vitórias consecutivas!");
         }
     }else if (id == 'back_hulk'){
-        if (varificarVitorias() > 3) {
+        if (qtdVitorias > 3) {
             document.getElementById('body').style = "background-image: url('https://i.imgur.com/ImscUyp.jpg');";
         }
         else {
-            alert("Você precisa ter mais de 3 vitórias!");
+            alert("Você precisa ter mais de 3 vitórias consecutivas!");
         }
     }else if (id == 'back_thanos'){
-        if (varificarVitorias() > 4) {
+        if (qtdVitorias > 4) {
             document.getElementById('body').style = "background-image: url('https://i.imgur.com/jjjT6dP.jpg');";
         }
         else {
-            alert("Você precisa ter mais de 4 vitórias!");
+            alert("Você precisa ter mais de 4 vitórias consecutivas!");
         }
     }else if (id == 'back_viuva'){
-        if (varificarVitorias() > 5) {
+        if (qtdVitorias > 5) {
             document.getElementById('body').style = "background-image: url('https://i.imgur.com/F0ebQMf.jpg');";
         }
         else {
-            alert("Você precisa ter mais de 5 vitórias!");
+            alert("Você precisa ter mais de 5 vitórias consecutivas!");
         }
     }
 }
 
-function varificarVitorias() {
-    var dscIp;
-    getIp(function (ip) {
-        dscIp = ip;
-        console.log("Seu IP é " + dscIp);
+function jogarNovamente() {
+    playerOneCode = 1;
+    playerTwoCode = 2;
+    redBlocks = 0;
+    greenBlocks = 0;
+    isMillRed = false;
+    isMillGreen = false;
+    isActiveRed = false;
+    isActiveGreen = false;
+    isGreenThreeLeft = false;
+    isRedThreeLeft = false;
+    blockWidth = 16;
+    strokeWidth = 2;
+    lastX = 0;
+    lastY = 0;
+    lastCenterX = 0;
+    lastCenterY = 0;
+    numberOfTurns = 0;
+    rows = 7;
+    columns = 7;
+    positionMatrix = new Array(7);
+    referenceMatrix = new Array(7);
+    canvas = document.getElementById("myCanvas");
+    context = canvas.getContext("2d");
+    multiPLayer = false;
+
+    context.clearRect(25  - blockWidth - strokeWidth, 25  - blockWidth - strokeWidth, 2 * (blockWidth + strokeWidth), 2 * ( blockWidth + strokeWidth));
+    context.clearRect(275 - blockWidth - strokeWidth, 25  - blockWidth - strokeWidth, 2 * (blockWidth + strokeWidth), 2 * ( blockWidth + strokeWidth));
+    context.clearRect(525 - blockWidth - strokeWidth, 25  - blockWidth - strokeWidth, 2 * (blockWidth + strokeWidth), 2 * ( blockWidth + strokeWidth));
+    context.clearRect(115 - blockWidth - strokeWidth, 115 - blockWidth - strokeWidth, 2 * (blockWidth + strokeWidth), 2 * ( blockWidth + strokeWidth));
+    context.clearRect(275 - blockWidth - strokeWidth, 115 - blockWidth - strokeWidth, 2 * (blockWidth + strokeWidth), 2 * ( blockWidth + strokeWidth));
+    context.clearRect(435 - blockWidth - strokeWidth, 115 - blockWidth - strokeWidth, 2 * (blockWidth + strokeWidth), 2 * ( blockWidth + strokeWidth));
+    context.clearRect(195 - blockWidth - strokeWidth, 195 - blockWidth - strokeWidth, 2 * (blockWidth + strokeWidth), 2 * ( blockWidth + strokeWidth));
+    context.clearRect(275 - blockWidth - strokeWidth, 195 - blockWidth - strokeWidth, 2 * (blockWidth + strokeWidth), 2 * ( blockWidth + strokeWidth));
+    context.clearRect(355 - blockWidth - strokeWidth, 195 - blockWidth - strokeWidth, 2 * (blockWidth + strokeWidth), 2 * ( blockWidth + strokeWidth));
+    context.clearRect(25  - blockWidth - strokeWidth, 275 - blockWidth - strokeWidth, 2 * (blockWidth + strokeWidth), 2 * ( blockWidth + strokeWidth));
+    context.clearRect(115 - blockWidth - strokeWidth, 275 - blockWidth - strokeWidth, 2 * (blockWidth + strokeWidth), 2 * ( blockWidth + strokeWidth));
+    context.clearRect(195 - blockWidth - strokeWidth, 275 - blockWidth - strokeWidth, 2 * (blockWidth + strokeWidth), 2 * ( blockWidth + strokeWidth));
+    context.clearRect(355 - blockWidth - strokeWidth, 275 - blockWidth - strokeWidth, 2 * (blockWidth + strokeWidth), 2 * ( blockWidth + strokeWidth));
+    context.clearRect(435 - blockWidth - strokeWidth, 275 - blockWidth - strokeWidth, 2 * (blockWidth + strokeWidth), 2 * ( blockWidth + strokeWidth));
+    context.clearRect(525 - blockWidth - strokeWidth, 275 - blockWidth - strokeWidth, 2 * (blockWidth + strokeWidth), 2 * ( blockWidth + strokeWidth));
+    context.clearRect(195 - blockWidth - strokeWidth, 355 - blockWidth - strokeWidth, 2 * (blockWidth + strokeWidth), 2 * ( blockWidth + strokeWidth));
+    context.clearRect(275 - blockWidth - strokeWidth, 355 - blockWidth - strokeWidth, 2 * (blockWidth + strokeWidth), 2 * ( blockWidth + strokeWidth));
+    context.clearRect(355 - blockWidth - strokeWidth, 355 - blockWidth - strokeWidth, 2 * (blockWidth + strokeWidth), 2 * ( blockWidth + strokeWidth));
+    context.clearRect(115 - blockWidth - strokeWidth, 435 - blockWidth - strokeWidth, 2 * (blockWidth + strokeWidth), 2 * ( blockWidth + strokeWidth));
+    context.clearRect(275 - blockWidth - strokeWidth, 435 - blockWidth - strokeWidth, 2 * (blockWidth + strokeWidth), 2 * ( blockWidth + strokeWidth));
+    context.clearRect(435 - blockWidth - strokeWidth, 435 - blockWidth - strokeWidth, 2 * (blockWidth + strokeWidth), 2 * ( blockWidth + strokeWidth));
+    context.clearRect(25  - blockWidth - strokeWidth, 525 - blockWidth - strokeWidth, 2 * (blockWidth + strokeWidth), 2 * ( blockWidth + strokeWidth));
+    context.clearRect(275 - blockWidth - strokeWidth, 525 - blockWidth - strokeWidth, 2 * (blockWidth + strokeWidth), 2 * ( blockWidth + strokeWidth));
+    context.clearRect(525 - blockWidth - strokeWidth, 525 - blockWidth - strokeWidth, 2 * (blockWidth + strokeWidth), 2 * ( blockWidth + strokeWidth));
+
+    initializeArray();
+    document.getElementById("room").value = "room-";
+    document.getElementById("message").innerHTML = "Clique em um lugar para começar!"
+    iniciaModal("home-login");
+}
+
+function iniciaModalVencedor(modalID) {
+    qtdClickModal = 0;
+    qtdClickBotoes = 0;
+    const modal = document.getElementById(modalID);
+    modal.classList.add("mostrar");
+    qtdClickModal = qtdClickModal + 1;
+    modal.addEventListener('click', (e) => {
+        console.log("cliquei");
+        console.log(e.target.id);
+        if(e.target.id == "btnJogarNovamente") {
+            console.log("achei");
+            qtdClickBotoes = qtdClickBotoes + 1;
+            if(qtdClickBotoes == qtdClickModal) {
+                console.log("chamando jogar novamente!");
+                modal.classList.remove("mostrar");
+                jogarNovamente();
+            }
+        }
     });
+}
 
-    return 3;
-
-    /*banco*/
-    /*var query = "SELECT count(*) FROM tb_vitorias_ip where ip = '201.0.68.111'";
-    db.cnn.exec(query, function(dadosRetornados, erro) {
-        if(erro){
-            console.log("Erro banco de dados");
-            return 0;
+function iniciaModalPerdedor(modalID) {
+    qtdClickModal = 0;
+    qtdClickBotoes = 0;
+    const modal = document.getElementById(modalID);
+    modal.classList.add("mostrar");
+    qtdClickModal = qtdClickModal + 1;
+    modal.addEventListener('click', (e) => {
+        console.log("cliquei");
+        console.log(e.target.id);
+        if(e.target.id == "btnJogarNovamente") {
+            console.log("achei");
+            qtdClickBotoes = qtdClickBotoes + 1;
+            if(qtdClickBotoes == qtdClickModal) {
+                console.log("chamando jogar novamente!");
+                modal.classList.remove("mostrar");
+                jogarNovamente();
+            }
         }
-        else{
-            console.log(dadosRetornados);
-            return dadosRetornados;
-        }
-    });*/
+    });
 }
