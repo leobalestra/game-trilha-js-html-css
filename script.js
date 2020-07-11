@@ -896,45 +896,64 @@ function checkGameOver() {
         if (redBlocks < 3 || greenBlocks < 3) {
             alert("Restam apenas 2 blocos " + ((greenBlocks < 3) ? namePlayer1 /*"Green"*/ : namePlayer2 /*"Red"*/) + "!\n" +
                 "Logo, Jogador " + ((greenBlocks < 3) ? namePlayer2 /*2*/ : namePlayer1 /*1*/) + " é Campeão!");
+            
             winnerSound.play();
-            //location.reload(true);
-            if (greenBlocks < 3 && quemEuSou1or2 == 2) {
-                aumentar1Vitoria();
-                iniciaModalVencedor("Ganhador-login");
-            }
-            else if (redBlocks < 3 && quemEuSou1or2 == 1){
-                aumentar1Vitoria();
-                iniciaModalVencedor("Ganhador-login");
+ 
+            if(multiPLayer) {
+                if (greenBlocks < 3 && quemEuSou1or2 == 2) {
+                    aumentar1Vitoria();
+                    iniciaModalVP("fim-login", "V");
+                }
+                else if (redBlocks < 3 && quemEuSou1or2 == 1){
+                    aumentar1Vitoria();
+                    iniciaModalVP("fim-login", "V");
+                }
+                else {
+                    iniciaModalVP("fim-login", "P");
+                }
             }
             else {
-                iniciaModalPerdedor("Perdedor-login");
-            };
+                iniciaModalVP("fim-login", "N");
+            }
         }
         else {
             //Verifica se não há nenhum elemento adjacente disponível para nenhum jogador.
             if (!canMove(playerOneCode, greenBlocks)) {
                 alert("Nenhum movimento possível para o Jogador " + namePlayer1 /*playerOneCode*/ + "\n" +
                     "Logo, Jogador " + namePlayer2 /*playerTwoCode*/ + " é Campeão!");
+
                 winnerSound.play();
-                //location.reload(true);
-                if(quemEuSou1or2 == 2 ){
-                    aumentar1Vitoria();
-                    iniciaModalVencedor("Ganhador-login");
+                
+                if(multiPLayer){
+                    if(quemEuSou1or2 == 2 ){
+                        aumentar1Vitoria();
+                        iniciaModalVP("fim-login", "V");
+                    }
+                    else {
+                        iniciaModalVP("fim-login", "P");
+                    }
                 }
                 else {
-                    iniciaModalPerdedor("Perdedor-login");
+                    iniciaModalVP("fim-login", "N");
                 }
+
             } else if (!canMove(playerTwoCode, redBlocks)) {
                 alert("Nenhum movimento possível para o Jogador " + namePlayer2 /*playerTwoCode*/ + "\n" +
                     "Logo, Jogador " + namePlayer1 /*playerOneCode*/ + " é Campeão!");
+                
                 winnerSound.play();
-                //location.reload(true);
-                if(quemEuSou1or2 == 1 ){
-                    aumentar1Vitoria();
-                    iniciaModalVencedor("Ganhador-login");
+
+                if (multiPLayer) {
+                    if(quemEuSou1or2 == 1 ){
+                        aumentar1Vitoria();
+                        iniciaModalVP("fim-login", "V");
+                    }
+                    else {
+                        iniciaModalVP("fim-login", "P");
+                    }
                 }
                 else {
-                    iniciaModalPerdedor("Perdedor-login");
+                    iniciaModalVP("fim-login", "N");
                 }
             }
         }
@@ -1204,41 +1223,27 @@ function jogarNovamente() {
     iniciaModal("home-login");
 }
 
-function iniciaModalVencedor(modalID) {
+function iniciaModalVP(modalID, tipo) {
     qtdClickModal = 0;
     qtdClickBotoes = 0;
     const modal = document.getElementById(modalID);
     modal.classList.add("mostrar");
-    qtdClickModal = qtdClickModal + 1;
-    modal.addEventListener('click', (e) => {
-        console.log("cliquei");
-        console.log(e.target.id);
-        if(e.target.id == "btnJogarNovamente") {
-            console.log("achei");
-            qtdClickBotoes = qtdClickBotoes + 1;
-            if(qtdClickBotoes == qtdClickModal) {
-                console.log("chamando jogar novamente!");
-                modal.classList.remove("mostrar");
-                jogarNovamente();
-            }
-        }
-    });
-}
 
-function iniciaModalPerdedor(modalID) {
-    qtdClickModal = 0;
-    qtdClickBotoes = 0;
-    const modal = document.getElementById(modalID);
-    modal.classList.add("mostrar");
+    if(tipo == "P") {
+        document.getElementById("texto-fim").innerHTML = "Você Perdeu!";
+    }
+    else if(tipo == "V") {
+        document.getElementById("texto-fim").innerHTML = "Você Ganhou!";
+    }
+    else {
+        document.getElementById("texto-fim").innerHTML = "Parabéns!";
+    }
+
     qtdClickModal = qtdClickModal + 1;
     modal.addEventListener('click', (e) => {
-        console.log("cliquei");
-        console.log(e.target.id);
         if(e.target.id == "btnJogarNovamente") {
-            console.log("achei");
             qtdClickBotoes = qtdClickBotoes + 1;
             if(qtdClickBotoes == qtdClickModal) {
-                console.log("chamando jogar novamente!");
                 modal.classList.remove("mostrar");
                 jogarNovamente();
             }
