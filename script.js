@@ -222,7 +222,7 @@ socket.on('turnPlayed', (data) => {
 // erro do io
 socket.on('err', (data) => {
     alert("A sala está cheia!");
-    location.reload();
+    jogarNovamente();
 });
 
 //recebendo fim do jogo
@@ -857,18 +857,29 @@ function checkMill(x, y, playerCode) {
     //Transverse through the given row and column and check for mill
     //Transversal através da linha e coluna especificadas e verifica a trilha
     for (var i = 0; i < 5; i++) {
+        console.log("flag: ", flag);
+        console.log("temp: ", temp);
+        console.log("x: ", x);
+        console.log("y: ", y);
+        console.log("playerCode: ", playerCode);
         flag = 0;
         for (var j = temp; j < temp + 3; j++) {
             if (positionMatrix[j][y] == playerCode) {
+                console.log("IF positionMatrix[j][y]: ", positionMatrix[j][y]);
+                console.log("IF j: ", j);
                 continue;
             } else {
+                console.log("ELSE positionMatrix[j][y]: ", positionMatrix[j][y]);
+                console.log("ELSE j: ", j);
                 flag = 1;
                 break;
             }
         }
         if (flag == 0) {
             //console.log("This is from : " + 1);
+            console.log("foi aqui");
             return true;
+
         } else {
             temp++;
         }
@@ -890,7 +901,9 @@ function checkMill(x, y, playerCode) {
         }
         if (flag == 0) {
             // console.log("This is from : " + 2);
+            console.log("foi aqui 2");
             return true;
+
         } else {
             temp++;
         }
@@ -906,6 +919,7 @@ function checkMill(x, y, playerCode) {
     }
     if (check == true) {
         //console.log("This is from : " + 3);
+        console.log("foi aqui 3");
         return true;
     }
     check = true;
@@ -920,6 +934,7 @@ function checkMill(x, y, playerCode) {
     }
     if (check == true) {
         //console.log("This is from : " + 4);
+        console.log("foi aqui 4");
         return true;
     }
 
