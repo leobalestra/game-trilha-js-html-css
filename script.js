@@ -55,6 +55,7 @@ function initializeGame() {
     hulkSound = new sound("sounds/soundHulk.wav");
     viuvaSound = new sound("sounds/soundViuva.wav");
 
+    document.getElementById("turn").value = "FATEC-SP";
     iniciaModal("home-login");
     initializeArray();
     document.getElementById("room").value = "room-";
@@ -913,6 +914,7 @@ function checkGameOver() {
                 }
             }
             else {
+                aumentar1Vitoria();
                 iniciaModalVP("fim-login", "N");
             }
         }
@@ -934,6 +936,7 @@ function checkGameOver() {
                     }
                 }
                 else {
+                    aumentar1Vitoria();
                     iniciaModalVP("fim-login", "N");
                 }
 
@@ -953,6 +956,7 @@ function checkGameOver() {
                     }
                 }
                 else {
+                    aumentar1Vitoria();
                     iniciaModalVP("fim-login", "N");
                 }
             }
@@ -1191,6 +1195,9 @@ function jogarNovamente() {
     canvas = document.getElementById("myCanvas");
     context = canvas.getContext("2d");
     multiPLayer = false;
+    
+    document.getElementById("turn").innerHTML = "FATEC-SP";
+    document.getElementById("message").innerHTML = "ADS";
 
     context.clearRect(25  - blockWidth - strokeWidth, 25  - blockWidth - strokeWidth, 2 * (blockWidth + strokeWidth), 2 * ( blockWidth + strokeWidth));
     context.clearRect(275 - blockWidth - strokeWidth, 25  - blockWidth - strokeWidth, 2 * (blockWidth + strokeWidth), 2 * ( blockWidth + strokeWidth));
@@ -1247,6 +1254,17 @@ function iniciaModalVP(modalID, tipo) {
                 modal.classList.remove("mostrar");
                 jogarNovamente();
             }
+        }
+    });
+}
+
+function regrasJogo() {
+    const modal = document.getElementById("regra-login");
+    modal.classList.add("mostrar");
+
+    modal.addEventListener('click', (e) => {
+        if(e.target.id == "btnOk") {
+            modal.classList.remove("mostrar");
         }
     });
 }

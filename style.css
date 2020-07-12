@@ -167,7 +167,6 @@ canvas {
         opacity: 1;
         transform: translate3d(0, 0, 0);
     }
-
 }
 
 /*VITORIA E DERROTA*/
@@ -189,7 +188,7 @@ canvas {
 }
 
 .mostrar .fim {
-    animation: ganhador_ani .8s;
+    animation: home_ani .8s;
 }
 
 .fim {
@@ -219,4 +218,58 @@ canvas {
     line-height: 40px;
     font-size: 40px;
     font-family: 'Bangers', cursive;
+}
+
+/*Reras*/
+.regra-container {
+    width: 100vw;
+    height: 100vh;
+    background: rgb(0,0,0,.5);
+    display: none; /*flex*/
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;    
+}
+
+.regra-container.mostrar {
+    display: flex;
+}
+
+.mostrar .regra {
+    animation: home_ani .8s;
+}
+
+.regra {
+    background: white;
+    display: flex;
+    min-width: 300px;
+    max-width: 900px;
+    max-height: 700px;
+    padding: 30px;
+    border: 10px solid #554e4e;
+    box-shadow: 0 0 0 5px black;
+    border-radius: 10px;
+}
+
+.ok {
+    margin: auto;
+    text-align: center;
+    border-radius: 10px;
+    font-family: 'Bangers', cursive;
+    font-size: 30px;
+    width:300px;
+    height: 60px;
+    cursor: pointer;
+}
+
+.texto-regra {
+    color: #000000;
+    margin: auto;
+    line-height: 40px;
+    font-size: 20px;
+    font-family: 'Bangers', cursive;
+    text-align: center;
 }
