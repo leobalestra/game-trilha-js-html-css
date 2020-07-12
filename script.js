@@ -37,11 +37,11 @@ var qtdVitorias = 0;
 var qtdClickModal = 0;
 var qtdClickBotoes = 0;
 
-axios.get('http://localhost:5000/api/back')
+axios.get('https://trilha-fatec.herokuapp.com/api/back')
                         .then(response => backgrounds(response))
                         .catch(error => console.log(error))
 
-axios.get('http://localhost:5000/api/tabu')
+axios.get('https://trilha-fatec.herokuapp.com/api/tabu')
                         .then(response => tables(response))
                         .catch(error => console.log(error))
 
