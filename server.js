@@ -4,6 +4,7 @@ const path = require('path');
 const app = express();
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
+const db = require('./database.js');
 
 let rooms = 0;
 
@@ -13,6 +14,33 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
+app.get('/api/tabu', (req, res) => {
+    var query = "SELECT * FROM tb_img_tabu";
+    db.query(query, function(dadosRetornados, erro) {
+        if(erro){
+            console.log();
+            res.send("Erro banco de dados");
+        }
+        else{
+            console.log(dadosRetornados);
+            res.send(dadosRetornados);
+        }
+    });
+});
+
+app.get('/api/back', (req, res) => {
+    var query = "SELECT * FROM tb_img_back";
+    db.query(query, function(dadosRetornados, erro) {
+        if(erro){
+            console.log();
+            res.send("Erro banco de dados");
+        }
+        else{
+            console.log(dadosRetornados);
+            res.send(dadosRetornados);
+        }
+    });
+});
 
 io.on('connection', (socket) => {
 
