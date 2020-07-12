@@ -37,9 +37,49 @@ var qtdVitorias = 0;
 var qtdClickModal = 0;
 var qtdClickBotoes = 0;
 
+axios.get('http://localhost:5000/api/back')
+                        .then(response => backgrounds(response))
+                        .catch(error => console.log(error))
+
+axios.get('http://localhost:5000/api/tabu')
+                        .then(response => tables(response))
+                        .catch(error => console.log(error))
+
 //para subir o app, use npm install e depois npm start
 //const socket = io.connect('http://localhost:5000');
 const socket = io.connect('https://trilha-fatec.herokuapp.com/')
+
+function backgrounds(backgrounds) {
+    var back1 = document.getElementById('back_geral');
+    back1.src = backgrounds.data[1].url;
+    var back2 = document.getElementById('back_cap');
+    back2.src = backgrounds.data[0].url;
+    var back3 = document.getElementById('back_ferro');
+    back3.src = backgrounds.data[2].url;
+    var back4 = document.getElementById('back_aranha');
+    back4.src = backgrounds.data[3].url;
+    var back5 = document.getElementById('back_hulk');
+    back5.src = backgrounds.data[4].url;
+    var back6 = document.getElementById('back_thanos');
+    back6.src = backgrounds.data[5].url;
+    var back7 = document.getElementById('back_viuva');
+    back7.src = backgrounds.data[6].url;
+}
+
+function tables(tables) {
+    var table1 = document.getElementById('tab_cap');
+    table1.src = tables.data[0].url;
+    var table2 = document.getElementById('tab_ferro');
+    table2.src = tables.data[1].url;
+    var table3 = document.getElementById('tab_aranha');
+    table3.src = tables.data[2].url;
+    var table4 = document.getElementById('tab_hulk');
+    table4.src = tables.data[3].url;
+    var table5 = document.getElementById('tab_thanos');
+    table5.src = tables.data[4].url;
+    var table6 = document.getElementById('tab_viuva');
+    table6.src = tables.data[5].url;
+}
 
 //Iniciando jogo
 function initializeGame() {
