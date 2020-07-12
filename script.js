@@ -849,6 +849,7 @@ function drawBlock(x, y, X, Y) {
     //update();  
 }
 
+//verifica trilha
 function checkMill(x, y, playerCode) {
     //Usando o fato de que duas trilhas não podem ocorrer simultaneamente
     var flag = 0;
