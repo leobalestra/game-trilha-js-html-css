@@ -15,6 +15,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/api/tabu', (req, res) => {
+    res.setHeader("Access-Control-Allow-Origin", "*");
     var query = "SELECT * FROM tb_img_tabu";
     db.query(query, function(dadosRetornados, erro) {
         if(erro){
@@ -29,6 +30,7 @@ app.get('/api/tabu', (req, res) => {
 });
 
 app.get('/api/back', (req, res) => {
+    res.setHeader("Access-Control-Allow-Origin", "*");
     var query = "SELECT * FROM tb_img_back";
     db.query(query, function(dadosRetornados, erro) {
         if(erro){

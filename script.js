@@ -53,17 +53,17 @@ function backgrounds(backgrounds) {
     var back1 = document.getElementById('back_geral');
     back1.src = backgrounds.data[1].url;
     var back2 = document.getElementById('back_cap');
-    back2.src = backgrounds.data[0].url;
+    back2.src = backgrounds.data[2].url;
     var back3 = document.getElementById('back_ferro');
-    back3.src = backgrounds.data[2].url;
+    back3.src = backgrounds.data[3].url;
     var back4 = document.getElementById('back_aranha');
-    back4.src = backgrounds.data[3].url;
+    back4.src = backgrounds.data[4].url;
     var back5 = document.getElementById('back_hulk');
-    back5.src = backgrounds.data[4].url;
+    back5.src = backgrounds.data[5].url;
     var back6 = document.getElementById('back_thanos');
-    back6.src = backgrounds.data[5].url;
+    back6.src = backgrounds.data[6].url;
     var back7 = document.getElementById('back_viuva');
-    back7.src = backgrounds.data[6].url;
+    back7.src = backgrounds.data[0].url;
 }
 
 function tables(tables) {
