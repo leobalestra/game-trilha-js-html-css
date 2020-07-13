@@ -246,12 +246,12 @@ canvas {
     background: white;
     display: flex;
     min-width: 300px;
-    max-width: 900px;
-    max-height: 700px;
-    padding: 30px;
+    max-width: 880px;
+    max-height: 550px;
+    padding: 20px;
     border: 10px solid #554e4e;
     box-shadow: 0 0 0 5px black;
-    border-radius: 10px;
+    border-radius: 20px;
 }
 
 .ok {
@@ -259,16 +259,16 @@ canvas {
     text-align: center;
     border-radius: 10px;
     font-family: 'Bangers', cursive;
-    font-size: 30px;
-    width:300px;
-    height: 60px;
+    font-size: 25px;
+    width:250px;
+    height: 50px;
     cursor: pointer;
 }
 
 .texto-regra {
     color: #000000;
     margin: auto;
-    line-height: 40px;
+    line-height: 28px;
     font-size: 20px;
     font-family: 'Bangers', cursive;
     text-align: center;
