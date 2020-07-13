@@ -857,27 +857,39 @@ function checkMill(x, y, playerCode) {
     //Transverse through the given row and column and check for mill
     //Transversal através da linha e coluna especificadas e verifica a trilha
     for (var i = 0; i < 5; i++) {
-        console.log("flag: ", flag);
-        console.log("temp: ", temp);
-        console.log("x: ", x);
-        console.log("y: ", y);
-        console.log("playerCode: ", playerCode);
         flag = 0;
         for (var j = temp; j < temp + 3; j++) {
             if (positionMatrix[j][y] == playerCode) {
-                console.log("IF positionMatrix[j][y]: ", positionMatrix[j][y]);
-                console.log("IF j: ", j);
-                continue;
+                /*novo!*/
+                if(x >= 0 && x <= 2 && y == 3) {
+                    if(positionMatrix[0][3] == playerCode && positionMatrix[1][3] == playerCode && positionMatrix[2][3] == playerCode) {
+                        continue;
+                    }
+                    else{
+                        flag = 1;
+                        break;
+                    }   
+                }
+                else if(x >= 4 && x <= 6 && y == 3) {
+                    if(positionMatrix[4][3] == playerCode && positionMatrix[5][3] == playerCode && positionMatrix[6][3] == playerCode) {
+                        continue;
+                    }
+                    else{
+                        flag = 1;
+                        break;
+                    }                    
+                }
+                else {
+                    continue;
+                }          
+                /*ate aqui*/      
             } else {
-                console.log("ELSE positionMatrix[j][y]: ", positionMatrix[j][y]);
-                console.log("ELSE j: ", j);
                 flag = 1;
                 break;
             }
         }
         if (flag == 0) {
             //console.log("This is from : " + 1);
-            console.log("foi aqui");
             return true;
 
         } else {
@@ -893,7 +905,27 @@ function checkMill(x, y, playerCode) {
         flag = 0;
         for (var l = temp; l < temp + 3; l++) {
             if (positionMatrix[x][l] == playerCode) {
-                continue;
+                if(y >= 0 && y <= 2 && x == 3) {
+                    if(positionMatrix[3][0] == playerCode && positionMatrix[3][1] == playerCode && positionMatrix[3][2] == playerCode) {
+                        continue;
+                    }
+                    else{
+                        flag = 1;
+                        break;
+                    }   
+                }
+                else if(y >= 4 && y <= 6 && x == 3) {
+                    if(positionMatrix[3][4] == playerCode && positionMatrix[3][5] == playerCode && positionMatrix[3][6] == playerCode) {
+                        continue;
+                    }
+                    else{
+                        flag = 1;
+                        break;
+                    }                    
+                }
+                else {
+                    continue;
+                }       
             } else {
                 flag = 1;
                 break;
